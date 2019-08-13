@@ -114,7 +114,7 @@ export const getOrientation = () => {
 };
 
 export const getTabBarHeight = () => {
-  return Platform.OS === 'ios' ? 49 : 55;
+  return Platform.OS === 'ios' ? 65 : 70;
 };
 
 export function capitalizeFirstLetter(string) {

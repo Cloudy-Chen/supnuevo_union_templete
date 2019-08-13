@@ -12,6 +12,8 @@ import PropTypes from 'prop-types';
 import ModalDropdown from './ModalDropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import colors from '../../../resources/colors';
+import strings from "../../../resources/strings";
+import {Button} from "react-native-elements";
 
 export default class DropdownCell extends Component {
 
@@ -19,7 +21,8 @@ export default class DropdownCell extends Component {
         defaultValue: PropTypes.string,
         dataList: PropTypes.array,
 
-        onDropDownSelect: PropTypes.func
+        onDropDownSelect: PropTypes.func,
+        onButtonPress: PropTypes.func,
     };
 
     static defaultProps = {
@@ -41,6 +44,7 @@ export default class DropdownCell extends Component {
         const {dropDownName ,isDropDown} = this.state;
 
         return (
+            <View style={styles.dropDownCellWrapper}>
             <ModalDropdown
                 style={styles.dropdown_cell}
                 textStyle={styles.textstyle}
@@ -55,11 +59,13 @@ export default class DropdownCell extends Component {
                     <Text style={styles.textstyle}>{dropDownName}</Text>
                     {
                         isDropDown?
-                            <FontAwesome name={'angle-up'} size={20} color={colors.primaryGray} style={styles.dropdown_image}/>:
-                            <FontAwesome name={'angle-down'} size={20} color={colors.primaryGray} style={styles.dropdown_image}/>
+                            <FontAwesome name={'angle-down'} size={20} color={colors.primaryGray} style={styles.dropdown_image}/>:
+                            <FontAwesome name={'angle-up'} size={20} color={colors.primaryGray} style={styles.dropdown_image}/>
                     }
                 </View>
             </ModalDropdown>
+            <Button containerStyle={styles.buttonStyle} title={strings.add} type={"outline"} raised onPress={this.props.onButtonPress}/>
+            </View>
         );
     }
 
@@ -96,16 +102,17 @@ const styles = StyleSheet.create({
         alignItems:'center',
         flexDirection:'row',
         height:40,
-        borderRightColor:'#cdcdcd',
-        borderRightWidth:0.5,
+        borderColor:'#cdcdcd',
+        borderWidth:0.5,
 
     },
     dropdown_viewcell: {
         width:'100%',
         alignItems:'center',
         height:40,
-        justifyContent:'center',
+        justifyContent:'flex-start',
         flexDirection:'row',
+        paddingHorizontal: 5,
     },
     textstyle: {
         fontSize: 13,
@@ -135,4 +142,9 @@ const styles = StyleSheet.create({
     dropdown_image: {
         marginLeft: 5
     },
+    dropDownCellWrapper:{
+        flex:1,
+        flexDirection: 'row',
+        padding:10
+    }
 });

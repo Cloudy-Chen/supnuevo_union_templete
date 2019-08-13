@@ -11,7 +11,7 @@ import FloatingTextInput from "../../components/FloatingTextInput";
 import colors from '../../resources/colors';
 import dimens from '../../resources/dimens';
 import strings from '../../resources/strings';
-import {isEmptyObject, isObject} from '../../utils/tools'
+import {isEmptyObject, isObject, showCenterToast} from '../../utils/tools'
 import {SpinnerWrapper} from '../../components/SpinnerLoading/index'
 
 const backgroundImg = require('../../assets/img/app_background_img.jpg');
@@ -24,7 +24,8 @@ export class Login extends Component {
             loginForm:{
                 username: '',
                 password: '',
-            }
+            },
+            isFetchedStore: false,
         }
     }
 
@@ -39,12 +40,16 @@ export class Login extends Component {
     }
 
     proceed() {
-
+        const username = this.props.auth.get("username");
+        const password = this.props.auth.get("password");
         const loginError = this.props.auth.get('loginError');
         const isLoggedIn = this.props.auth.get('isLoggedIn');
 
+        if(!this.state.isFetchedStore && !isEmptyObject(username) && !isEmptyObject(password))
+            this.setState({loginForm:Object.assign(this.state.loginForm,{username: username,password:password}),isFetchedStore:true});
+
         if (isObject(loginError) && loginError && isObject(loginError.message) && loginError.message) {
-            alert(loginError.message);
+            showCenterToast(loginError.message);
             this.props.dispatch(loginActions.setLoginError({}))
         } else if (isLoggedIn) {
             this.props.navigation.navigate('RootStack'); //自动登录
@@ -59,7 +64,8 @@ export class Login extends Component {
                 <ImageBackground source={backgroundImg} style={loginStyles.imageBackgroundStyle}>
                 <View style={loginStyles.headerStyle}>
                     <View style ={loginStyles.logoWrapperStyle}>
-                    <Text style={loginStyles.titleStyle}>{strings.app_title}</Text>
+                    <Text style={loginStyles.titleStyle} >Supnuevo</Text>
+                    <Text style={loginStyles.titleStyle} >Union</Text>
                     </View>
                 </View>
 
@@ -115,7 +121,7 @@ export class Login extends Component {
     onLoginPress = () => {
         const {username,password} = this.state.loginForm;
         if(isEmptyObject(username) || isEmptyObject(password)){
-            alert(strings.login_validate_msg);
+            showCenterToast(strings.login_validate_msg);
             return;
         }else{
             this.props.dispatch(loginActions.login(username, password));
@@ -156,6 +162,7 @@ const loginStyles = StyleSheet.create({
         borderRadius: 80,
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection: 'column'
     },
     logoStyle:{
         height:60,

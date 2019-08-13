@@ -18,10 +18,8 @@ export default class AISearchBar extends React.PureComponent {
 
     render() {
         return (
-
             <KeyboardAvoidingView behavior="padding">
             <View style={styles.searchContainer}>
-                {this._renderSearchResult()}
                 <View style={styles.searchInputContainer}>
                     <TouchableOpacity style={styles.searchIcon} onPress={this.props._onMicrophonePress}>
                         <Ionicons name={'md-mic'} size={25} color={colors.primaryDarkGray}/>
@@ -37,6 +35,7 @@ export default class AISearchBar extends React.PureComponent {
                         />
                     </View>
                 </View>
+                {this._renderSearchResult()}
             </View>
             </KeyboardAvoidingView>
         );
@@ -58,8 +57,8 @@ export default class AISearchBar extends React.PureComponent {
                 <TouchableOpacity key={index} onPress={() => {this.props._onSearchResultPress(item)}}>
                     <View style={styles.searchResultContainer}>
                         <View style={styles.searchResultRightContainer}>
-                            <Text numberOfLines={1} style={styles.searchResultTitle}>{item.codigo}</Text>
-                            <Text numberOfLines={1} style={styles.searchResultSubTitle}>{item.descripcion}</Text>
+                            <Text numberOfLines={1} style={styles.searchResultTitle}>{item.name}</Text>
+                            <Text numberOfLines={1} style={styles.searchResultSubTitle}>{item.codigo}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>

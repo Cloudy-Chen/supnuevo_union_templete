@@ -11,7 +11,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 2
     },
     {
         "id":"2",
@@ -25,7 +26,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "42414124"
+        "codigo": "42414124",
+        "discount": 5
     },
     {
         "id":"3",
@@ -39,7 +41,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"4",
@@ -53,7 +56,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 7
     },
     {
         "id":"5",
@@ -67,7 +71,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"6",
@@ -81,7 +86,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 3
     },
     {
         "id":"7",
@@ -95,7 +101,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 3
     },
     {
         "id":"8",
@@ -109,7 +116,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 3
     },
     {
         "id":"9",
@@ -123,7 +131,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"10",
@@ -137,7 +146,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 7
     },
     {
         "id":"11",
@@ -151,7 +161,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"12",
@@ -165,7 +176,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"13",
@@ -179,7 +191,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"14",
@@ -193,7 +206,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"15",
@@ -207,7 +221,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"16",
@@ -221,7 +236,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 6
     },
     {
         "id":"17",
@@ -235,7 +251,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"18",
@@ -249,7 +266,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 7
     },
     {
         "id":"19",
@@ -263,7 +281,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"20",
@@ -277,7 +296,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"21",
@@ -291,7 +311,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 7
     },
     {
         "id":"22",
@@ -305,7 +326,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 1
     },
     {
         "id":"23",
@@ -319,7 +341,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"24",
@@ -333,7 +356,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"25",
@@ -347,7 +371,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 2
     },
     {
         "id":"26",
@@ -361,7 +386,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 2
     },
     {
         "id":"27",
@@ -375,7 +401,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 2
     },
     {
         "id":"28",
@@ -389,7 +416,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 9
     },
     {
         "id":"29",
@@ -403,7 +431,8 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 8
     },
     {
         "id":"30",
@@ -417,6 +446,7 @@
         "presentacion": "",
         "marca": "",
         "tamano": "",
-        "codigo": "231142441"
+        "codigo": "231142441",
+        "discount": 7
     }
 ]

@@ -11,9 +11,11 @@ module.exports = new LocalizedStrings({
     cancel: "取消",
     choose: "选择",
     back: "返回",
+    add: "添加",
+    commit: "提交",
 
     // auth
-    app_title: "Template",
+    app_title: "Supnuevo Union",
     login_btn: "登录",
     login_validate_msg: "请将登录信息填写完整",
     login_success: "登录成功",
@@ -99,5 +101,21 @@ module.exports = new LocalizedStrings({
 
     // AIServer
     getResultFail:"搜索数据失败",
+
+    //orderBasicInfo
+    customerMobilePhone:"客户手机电话",
+    deliverMobilePhone:"提货超市电话",
+    deliverAddress:"提货超市地址",
+    type_pick:"自提",
+    type_deliver:"送货",
+    deliverAddress_input:"请输入送货地址",
+    pickMobile_input:"请输入接货人电话",
+    pickName_input:"请输入接货人姓名",
+    cartInfo: "购物车中的商品",
+    discountInfo: "折扣信息",
+    orderHistoryInput:"订单日期",
+    orderInfo:"订单内容",
+    pickName:"接货人姓名",
+    pickMobilePhone:"接货人电话",
   },
 });

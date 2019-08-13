@@ -15,10 +15,9 @@ import saveSubsetFilter from '../utils/saveSubsetFilter'
 
 import authReducer from "../reducers/authReducer";
 import rootReducer from "../reducers/rootReducer";
-import dataReducer from "../reducers/dataReducer";
-import chartReducer from "../reducers/chartReducer";
-import settingsReducer from '../reducers/settingsReducer';
-import notificationReducer from "../reducers/notificationReducer";
+import unionReducer from "../reducers/unionReducer";
+import shoppingReducer from "../reducers/shoppingReducer";
+import orderReducer from "../reducers/orderReducer";
 
 import { rootSaga } from './saga';
 import {RefreshState} from "../components/RefreshListView";
@@ -27,10 +26,9 @@ import constants from '../resources/constants';
 const combinedReducers = combineReducers({
   root: rootReducer,
   auth: authReducer,
-  data: dataReducer,
-  chart: chartReducer,
-  settings: settingsReducer,
-  notification: notificationReducer,
+  union: unionReducer,
+  shopping: shoppingReducer,
+  order: orderReducer,
 });
 
 const initialState = new Immutable.Map({
@@ -44,25 +42,26 @@ const initialState = new Immutable.Map({
     username: '',
     password: '',
     sessionId: '',
+    customerInfo: {},
+    personInfo: {},
   }),
-  data: Immutable.Map({
-    data: {},
-    datas: [],
+  union: Immutable.Map({
+    union: {},
+    discount: null,
+    priceList: [],
+    unions: [],
+    merchant: {},
+    merchants: [],
     refreshState: RefreshState.Idle,
     datasError: false,
     dataResponse: constants.INITIAL,
   }),
-  chart: Immutable.Map({
+  shopping: Immutable.Map({
+    cartList:[],
+    commodityList:[]
   }),
-  notification: Immutable.Map({
-    notifications: [],
-    amount: 0,
+  order: Immutable.Map({
   }),
-  settings: Immutable.Map({
-    resultList: [],
-    resultListResponse: constants.INITIAL,
-    message: [],
-  })
 });
 
 export default function configureStore() {
@@ -76,10 +75,9 @@ export default function configureStore() {
       store,
       {
         storage: AsyncStorage,
-        whitelist: ['auth','data'],
+        whitelist: ['auth'],
         transforms: [
-            // 白名单 whitelist 中需要save的值
-          saveSubsetFilter(['username','password','sessionId','isLoggedIn'])
+          saveSubsetFilter(['username','password','sessionId'])
         ],
       }
   );
