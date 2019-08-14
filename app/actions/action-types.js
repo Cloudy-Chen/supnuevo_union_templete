@@ -8,11 +8,15 @@ export const SET_LOADING = "SET_LOADING";
 // auth
 export const LOGIN_ACTION = "LOGIN_ACTION";
 export const LOGOUT_ACTION = "LOGOUT_ACTION";
+export const REGISTER_ACTION = "REGISTER_ACTION";
 export const LOGIN_SUCCESS = "LOGIN_SUCESS";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const LOGIN_ERROR = "LOGIN_ERROR";
 export const LOGOUT_ERROR = "LOGOUT_ERROR";
+export const REGISTER_ERROR = "REGISTER_ERROR";
 export const RESET_AUTH = "RESET_AUTH";
+export const RESET_REGISTER_STATUS = "RESET_REGISTER_STATUS";
 
 // data
 export const GET_DATAS_ACTION = "GET_DATAS_ACTION";

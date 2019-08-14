@@ -5,13 +5,12 @@
 import React, {Component} from "react";
 import {Image, StatusBar, Text, View, TouchableOpacity, TextInput, ImageBackground} from "react-native";
 import {connect} from "react-redux";
-import * as loginActions from "../../actions/auth-actions";
-import * as rootActions from "../../actions/root-actions";
+import * as authActions from "../../actions/auth-actions";
 import FloatingTextInput from "../../components/FloatingTextInput";
 import colors from '../../resources/colors';
 import dimens from '../../resources/dimens';
 import strings from '../../resources/strings';
-import {isEmptyObject, isObject} from '../../utils/tools'
+import {isEmptyObject, isObject, showCenterToast} from '../../utils/tools'
 import {SpinnerWrapper} from "../../components/SpinnerLoading";
 
 const backgroundImg = require('../../assets/img/app_background_img.jpg');
@@ -23,9 +22,32 @@ export class Register extends Component {
         this.state={
             registerForm:{
                 username:'',
+                telephone:'',
                 password:'',
             }
         }
+    }
+
+    componentDidUpdate() {
+        this.proceed()
+    }
+
+    proceed() {
+        const username = this.props.auth.get("username");
+        const password = this.props.auth.get("password");
+        const registerError = this.props.auth.get("registerError");
+        const isRegisterSuccess = this.props.auth.get("isRegisterSuccess");
+
+        if (registerError && registerError !== '') {
+            showCenterToast(registerError);
+        } else if (isRegisterSuccess) {
+            showCenterToast(strings.register_success);
+            this.props.navigation.pop();
+            if (this.props.navigation.state.params.callback) {
+                this.props.navigation.state.params.callback(username,password);
+            }
+        }
+        this.props.dispatch(authActions.resetRegisterStatus());
     }
 
     render() {
@@ -36,7 +58,8 @@ export class Register extends Component {
                 <ImageBackground source={backgroundImg} style={registerStyles.imageBackgroundStyle}>
                     <View style={registerStyles.headerStyle}>
                         <View style ={registerStyles.logoWrapperStyle}>
-                            <Text style={registerStyles.titleStyle}>{strings.app_title}</Text>
+                            <Text style={registerStyles.titleStyle} >Supnuevo</Text>
+                            <Text style={registerStyles.titleStyle} >Union</Text>
                         </View>
                     </View>
 
@@ -51,6 +74,16 @@ export class Register extends Component {
                             this.setState({registerForm:Object.assign(this.state.registerForm,{username: username})});
                         }}
                     />
+                    {/*输入手机号*/}
+                    <FloatingTextInput
+                        iconName = {'phone'}
+                        placeText = {'请输入手机号'}
+                        textInput = {this.state.registerForm.telephone}
+                        isPassword = {false}
+                        onChangeText = {(telephone)=>{
+                            this.setState({registerForm:Object.assign(this.state.registerForm,{telephone: telephone})});
+                        }}
+                    />
                     {/*输入密码*/}
                     <FloatingTextInput
                         iconName = {'lock'}
@@ -61,7 +94,6 @@ export class Register extends Component {
                             this.setState({registerForm:Object.assign(this.state.registerForm,{password: password})});
                         }}
                     />
-
                     {/*注册按钮*/}
                     <TouchableOpacity
                         style={registerStyles.registerButtonStyle}
@@ -87,15 +119,12 @@ export class Register extends Component {
 
     // 对注册按钮的响应
     onRegisterPress = () => {
-        this.props.navigation.pop();
-        if (this.props.navigation.state.params.callback) {
-            this.props.navigation.state.params.callback(this.state.registerForm.username,this.state.registerForm.password);
-        }
-    }
+        const {username, telephone, password} = this.state.registerForm;
+        this.props.dispatch(authActions.register(username, telephone, password));};
 
     // 对返回按钮的响应
     onBackPress = () => this.props.navigation.pop();
-};
+}
 
 //布局UI风格
 const registerStyles = {

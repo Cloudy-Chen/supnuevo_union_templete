@@ -13,9 +13,25 @@ export default function authReducer(state, action = {}) {
     case actions.LOGIN_SUCCESS:
       return state.withMutations(state => state
           .set('isLoggedIn', true)
+          .set('loginError', '')
           .set('sessionId', action.sessionId)
           .set('username', action.username)
+          .set('password', action.password)
+          .set('customerInfo', action.customerInfo));
+    case actions.REGISTER_ERROR:
+      return state.withMutations(state => state
+          .set('isRegisterSuccess', false)
+          .set('registerError', action.error));
+    case actions.REGISTER_SUCCESS:
+      return state.withMutations(state => state
+          .set('isRegisterSuccess', true)
+          .set('registerError','')
+          .set('username', action.username)
           .set('password', action.password));
+    case actions.RESET_REGISTER_STATUS:
+      return state.withMutations(state => state
+          .set('isRegisterSuccess', false)
+          .set('registerError',''));
     case actions.LOGOUT_SUCCESS: {
       return state.withMutations(state => state
           .set('isLoggedIn', false)

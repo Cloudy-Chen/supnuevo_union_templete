@@ -5,7 +5,7 @@
 import React, {Component} from "react";
 import {Image, StatusBar, Text, View, TouchableOpacity, TextInput, InteractionManager, StyleSheet, Platform, ImageBackground} from "react-native";
 import {connect} from "react-redux";
-import * as loginActions from "../../actions/auth-actions";
+import * as authActions from "../../actions/auth-actions";
 import * as rootActions from "../../actions/root-actions";
 import FloatingTextInput from "../../components/FloatingTextInput";
 import colors from '../../resources/colors';
@@ -48,9 +48,9 @@ export class Login extends Component {
         if(!this.state.isFetchedStore && !isEmptyObject(username) && !isEmptyObject(password))
             this.setState({loginForm:Object.assign(this.state.loginForm,{username: username,password:password}),isFetchedStore:true});
 
-        if (isObject(loginError) && loginError && isObject(loginError.message) && loginError.message) {
-            showCenterToast(loginError.message);
-            this.props.dispatch(loginActions.setLoginError({}))
+        if (loginError && loginError !== '') {
+            showCenterToast(loginError);
+            this.props.navigation.push('Register');
         } else if (isLoggedIn) {
             this.props.navigation.navigate('RootStack'); //自动登录
         }
@@ -90,7 +90,6 @@ export class Login extends Component {
                             this.setState({loginForm:Object.assign(this.state.loginForm,{password: password})});
                         }}
                     />
-
                     {/*登录按钮*/}
                     <TouchableOpacity
                         style={loginStyles.loginButtonStyle}
@@ -99,7 +98,6 @@ export class Login extends Component {
                             <Text style={loginStyles.buttonTextStyle}>{strings.login_btn}</Text>
                         </View>
                     </TouchableOpacity>
-
                     {/*注册按钮*/}
                     <TouchableOpacity
                         style={loginStyles.registerButtonStyle}
@@ -124,7 +122,7 @@ export class Login extends Component {
             showCenterToast(strings.login_validate_msg);
             return;
         }else{
-            this.props.dispatch(loginActions.login(username, password));
+            this.props.dispatch(authActions.login(username, password));
         }
     }
 

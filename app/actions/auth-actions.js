@@ -1,5 +1,5 @@
 /**
- * login-action.js
+ * auth-action.js
  */
 
 import * as actions from "../actions/action-types";
@@ -12,6 +12,16 @@ export function login(username, password) {
   }
 }
 
+export function setLoginSuccess(sessionId, username, password, customerInfo) {
+  return {
+    type: actions.LOGIN_SUCCESS,
+    sessionId: sessionId,
+    username: username,
+    password: password,
+    customerInfo: customerInfo,
+  }
+}
+
 export function setLoginError(error) {
   return {
     type: actions.LOGIN_ERROR,
@@ -19,10 +29,31 @@ export function setLoginError(error) {
   }
 }
 
-export function setLoginSuccess(sessionId, username, password) {
+export function register(username, telephone, password) {
   return {
-    type: actions.LOGIN_SUCCESS,
-    sessionId: sessionId,
+    type: actions.REGISTER_ACTION,
+    username: username,
+    telephone: telephone,
+    password: password
+  }
+}
+
+export function setRegisterError(error) {
+  return {
+    type: actions.REGISTER_ERROR,
+    error: error
+  }
+}
+
+export function resetRegisterStatus() {
+  return {
+    type: actions.RESET_REGISTER_STATUS,
+  }
+}
+
+export function setRegisterSuccess(username, password) {
+  return {
+    type: actions.REGISTER_SUCCESS,
     username: username,
     password: password,
   }

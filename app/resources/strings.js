@@ -22,9 +22,10 @@ module.exports = new LocalizedStrings({
     login_fail: "登录失败",
     register_btn: "注册",
     register_validate_msg: "请将注册信息填写完整",
-    register_success: "注册成功",
+    register_success: "已注册等待审核中！",
     register_fail: "注册失败",
     login_wait: "登录中,请稍候...",
+    customer_invalid: "该客户不存在",
 
     // form
     edit_btn: "修改",

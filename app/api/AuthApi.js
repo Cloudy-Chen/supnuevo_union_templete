@@ -7,13 +7,34 @@ import constants from "../resources/constants";
 import {post} from '../utils/httpUtils'
 
 // 登录
-export function getAccessToken (username, password) {
-  const url = constants.SUPNUEVO_BASE_URL + '/func/auth/webLogin';
+export function webLogin (username, password) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/auth/webLogin';
   const body = {
     loginName: username,
     password: password,
-    loginType: 1,
-  }
+  };
+
+  return post(url ,body);
+}
+
+// 获取登录客户的信息
+export function getSupnuevoCustomerInfo (session) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/getSupnuevoCustomerInfo';
+  const body = {
+    session: session
+  };
+
+  return post(url ,body);
+}
+
+// 注册
+export function supnuevoCustomerRegister (username, telephone, password) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/supnuevoCustomerRegister';
+  const body = {
+    nickName: username,
+    telephone: telephone,
+    password: password,
+  };
 
   return post(url ,body);
 }
@@ -25,7 +46,7 @@ export function loginAfterOtherServerAuthed (auth) {
     loginName: auth.username,
     password: auth.password,
     motherServerSessionId: auth.sessionId,
-  }
+  };
 
   return post(url ,body);
 }
@@ -33,8 +54,7 @@ export function loginAfterOtherServerAuthed (auth) {
 // 登出
 export function logOut () {
   const url = constants.SUPNUEVO_BASE_URL + '/func/auth/webLogout';
-  const body = {
-  }
+  const body = {};
 
   return post(url ,body);
 }

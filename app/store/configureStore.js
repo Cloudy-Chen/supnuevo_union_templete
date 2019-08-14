@@ -37,8 +37,9 @@ const initialState = new Immutable.Map({
   }),
   auth: Immutable.Map({
     isLoggedIn: false,
+    isRegisterSuccess: false,
     loginError: '',
-    registerStatus: false,
+    registerError: '',
     username: '',
     password: '',
     sessionId: '',
@@ -77,7 +78,7 @@ export default function configureStore() {
         storage: AsyncStorage,
         whitelist: ['auth'],
         transforms: [
-          saveSubsetFilter(['username','password','sessionId'])
+          saveSubsetFilter(['username','password','sessionId','customerInfo'])
         ],
       }
   );
