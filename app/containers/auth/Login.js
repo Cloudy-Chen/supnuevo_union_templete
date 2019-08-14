@@ -50,10 +50,11 @@ export class Login extends Component {
 
         if (loginError && loginError !== '') {
             showCenterToast(loginError);
-            this.props.navigation.push('Register');
+            this._navigateToRegister();
         } else if (isLoggedIn) {
             this.props.navigation.navigate('RootStack'); //自动登录
         }
+        this.props.dispatch(authActions.resetLoginStatus());
     }
 
     render() {
@@ -107,9 +108,8 @@ export class Login extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
-
                     {/*登录加载*/}
-                    <SpinnerWrapper loading={loading}/>
+                    <SpinnerWrapper loading={loading} title={'登录中,请稍候...'}/>
                 </ImageBackground>
             </View>
         );
@@ -127,11 +127,15 @@ export class Login extends Component {
     }
 
     // 对注册按钮的响应
-    onRegisterPress = () => this.props.navigation.push('Register',{
-        callback: ((username,password) => {
-            this.setState({loginForm:Object.assign(this.state.loginForm,{username:username, password: password})});
-        })
-    });
+    onRegisterPress = () => this._navigateToRegister();
+
+    _navigateToRegister(){
+        this.props.navigation.push('Register',{
+            callback: ((username,password) => {
+                this.setState({loginForm:Object.assign(this.state.loginForm,{username:username, password: password})});
+            })
+        });
+    }
 };
 
 //布局UI风格

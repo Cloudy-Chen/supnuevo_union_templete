@@ -7,11 +7,11 @@ export default class SpinnerWrapper extends React.PureComponent {
 
     render() {
 
-        const {loading} = this.props;
+        const {loading, title} = this.props;
 
         return (
             <Spinner
-                customIndicator={<CommonLoading hideBackground />}
+                customIndicator={<CommonLoading hideBackground title={title}/>}
                 overlayColor="rgba(0, 0, 0, 0)"
                 size="large"
                 visible={loading}

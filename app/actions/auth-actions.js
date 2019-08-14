@@ -29,6 +29,12 @@ export function setLoginError(error) {
   }
 }
 
+export function resetLoginStatus() {
+  return {
+    type: actions.RESET_LOGIN_STATUS,
+  }
+}
+
 export function register(username, telephone, password) {
   return {
     type: actions.REGISTER_ACTION,

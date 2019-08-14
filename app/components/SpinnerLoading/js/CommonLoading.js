@@ -9,7 +9,7 @@ export default class CommonLoading extends React.PureComponent {
     return (
       <View style={[styles.common, !this.props.hideBackground ? styles.wrapper : null, { top: this.props.top ? this.props.top : (width * 3) / 4 }]}>
         <ActivityIndicator color={colors.baseWhite} size="large" />
-        <Text style={styles.text}>{strings.login_wait}</Text>
+        <Text style={styles.text}>{this.props.title}</Text>
       </View>
     );
   }

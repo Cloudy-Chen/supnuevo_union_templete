@@ -3,7 +3,16 @@
  */
 
 import React, {Component} from "react";
-import {Image, StatusBar, Text, View, TouchableOpacity, TextInput, ImageBackground} from "react-native";
+import {
+    Image,
+    StatusBar,
+    Text,
+    View,
+    TouchableOpacity,
+    TextInput,
+    ImageBackground,
+    InteractionManager
+} from "react-native";
 import {connect} from "react-redux";
 import * as authActions from "../../actions/auth-actions";
 import FloatingTextInput from "../../components/FloatingTextInput";
@@ -12,6 +21,7 @@ import dimens from '../../resources/dimens';
 import strings from '../../resources/strings';
 import {isEmptyObject, isObject, showCenterToast} from '../../utils/tools'
 import {SpinnerWrapper} from "../../components/SpinnerLoading";
+import * as rootActions from "../../actions/root-actions";
 
 const backgroundImg = require('../../assets/img/app_background_img.jpg');
 
@@ -26,6 +36,12 @@ export class Register extends Component {
                 password:'',
             }
         }
+    }
+
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(()=> {
+            this.props.dispatch(rootActions.setLoading(false));
+        });
     }
 
     componentDidUpdate() {
@@ -112,6 +128,8 @@ export class Register extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
+                    {/*注册加载*/}
+                    <SpinnerWrapper loading={loading} title={'注册中,请稍候...'}/>
                 </ImageBackground>
             </View>
         );

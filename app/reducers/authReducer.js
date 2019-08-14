@@ -32,19 +32,20 @@ export default function authReducer(state, action = {}) {
       return state.withMutations(state => state
           .set('isRegisterSuccess', false)
           .set('registerError',''));
-    case actions.LOGOUT_SUCCESS: {
+    case actions.RESET_LOGIN_STATUS:
+      return state.withMutations(state => state
+          .set('loginError',''));
+    case actions.LOGOUT_SUCCESS:
       return state.withMutations(state => state
           .set('isLoggedIn', false)
           .set('sessionId', '')
           .set('username', '')
           .set('password', ''));
-    }
-    case actions.LOGOUT_ERROR: {
+    case actions.LOGOUT_ERROR:
       return state.withMutations(state => state
           .set('isLoggedIn', false)
           .set('loginError', action.error));
-    }
-    case actions.RESET_AUTH: {
+    case actions.RESET_AUTH:
       return state.withMutations(state => state
           .set('isLoggedIn', false)
           .set('loginError','')
@@ -52,7 +53,6 @@ export default function authReducer(state, action = {}) {
           .set('sessionId', '')
           .set('username', '')
           .set('password', ''));
-    }
     default:
       return state
   }
