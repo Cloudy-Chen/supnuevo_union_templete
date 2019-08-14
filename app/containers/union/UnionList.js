@@ -1,5 +1,5 @@
 /**
- * DataForm.js
+ * UnionList.js
  */
 import React, {Component} from "react";
 import {
@@ -19,11 +19,12 @@ import {
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
 import {BottomToolBar} from "../../components/BottomToolBar";
-import unions from "../../test/unions";
 import {Avatar, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
 import constants from "../../resources/constants";
-import {SCREEN_WIDTH} from "../../utils/tools";
+import strings from "../../resources/strings";
+import {isEmptyObject, SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
+import * as unionActions from "../../actions/union-actions";
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 export class UnionList extends Component {
@@ -34,11 +35,21 @@ export class UnionList extends Component {
       };
   }
 
-    componentDidMount() {
+  componentDidMount(){
+      this.props.dispatch(unionActions.getUnionList());
+  }
 
+    componentWillReceiveProps(nextProps) {
+        const Response = this.props.union.get('dataResponse');
+        const nextResponse = nextProps.union.get('dataResponse');
+
+        if (Response === constants.INITIAL && nextResponse === constants.GET_UNION_LIST_SUCCESS) {
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }else if (Response === constants.INITIAL && nextResponse === constants.GET_UNION_LIST_FAIL){
+            showCenterToast(strings.getUnionListFail);
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }
     }
-
-    componentWillReceiveProps(nextProps) {}
 
   render() {
       const unions = this.props.union.get("unions");
@@ -49,13 +60,13 @@ export class UnionList extends Component {
                           navigation = {this.props.navigation}
                           _onLeftIconPress={this._onVolumeIconPress}
                           _onRightIconPress={this._onHelpIconPress}/>
-              {this._renderUnionList()}
+              {this._renderUnionList(unions)}
               <BottomToolBar navigation = {this.props.navigation}/>
           </View>
       );
   }
 
-  _renderUnionList(){
+  _renderUnionList(unions){
       return(
           <View style={styles.listViewWrapper}>
               <ListView
@@ -68,9 +79,10 @@ export class UnionList extends Component {
   }
 
     _renderItem = (rowData,sectionId,rowId) => {
+      const image = rowData.image && rowData.image!==undefined?{uri:rowData.image}:require('../../assets/img/img_logo.png');
         return (
             <ListItem
-                leftElement={<Image source={{uri:rowData.pictureurl}} style={styles.image}/>}
+                leftElement={<Image source={image} style={styles.image} resizeMode={"contain"}/>}
                 title={rowData.unionName}
                 style={styles.listItemStyle}
                 chevron
@@ -82,7 +94,10 @@ export class UnionList extends Component {
 
   _onHelpIconPress =() =>{};
 
-  _onUnionPress =(union) =>this.props.navigation.push("UnionMemberList",{union:union});
+  _onUnionPress =(union) =>{
+      this.props.dispatch(unionActions.setUnion(union));
+      this.props.navigation.push("UnionMemberList",{union:union});
+  }
 
 };
 

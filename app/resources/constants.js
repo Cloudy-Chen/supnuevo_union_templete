@@ -51,5 +51,12 @@ export default {
   discountHeaderList:['商品名称','购买数量','减免小计'],
 
   // RULE
-  rule:"北部第一网店\n\n本店最低购买量为实际购买金额不小于2000 peso\n\n折扣商品不大于总够买辆的50%\n\n不承诺一定送货上门\n\n非超市开门时间提货，一定要预约\n\n"
+  rule:"北部第一网店\n\n本店最低购买量为实际购买金额不小于2000 peso\n\n折扣商品不大于总够买辆的50%\n\n不承诺一定送货上门\n\n非超市开门时间提货，一定要预约\n\n",
+
+  // UNION
+  GET_UNION_LIST_SUCCESS: "GET_UNION_LIST_SUCCESS",
+  GET_UNION_LIST_FAIL: "GET_UNION_LIST_FAIL",
+  GET_UNION_MEMBER_LIST_SUCCESS: "GET_UNION_MEMBER_LIST_SUCCESS",
+  GET_UNION_MEMBER_LIST_FAIL: "GET_UNION_MEMBER_LIST_FAIL",
+
 }
