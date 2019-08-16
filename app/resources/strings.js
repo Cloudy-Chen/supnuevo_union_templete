@@ -90,5 +90,8 @@ module.exports = new LocalizedStrings({
     getUnionAdvertisementListFail: "获取折扣广告失败",
     getUnionPriceListFail: "获取价格表失败",
     getUnionPriceListLuceneFail: "搜索失败",
+
+    //shopping
+    getCartInfoFail: "获取购物车信息失败",
   },
 });

@@ -8,6 +8,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import colors from '../resources/colors';
 import { SCREEN_WIDTH} from '../utils/tools';
 import {Badge} from "react-native-elements";
+import SwipeableView from "./SwipeableView";
+import constants from '../resources/constants';
 
 export default class ShoppingCart extends React.PureComponent {
 
@@ -18,34 +20,33 @@ export default class ShoppingCart extends React.PureComponent {
   }
 
   render() {
-    const cartList = this.props.cartList;
+    const cartInfo = this.props.cartInfo;
     return(
         <View style={styles.container}>
         <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={true}
         >
-          {this._renderCartItems(cartList)}
+          {this._renderCartItems(cartInfo)}
         </ScrollView>
         </View>
     )
   }
 
-  _renderCartItems(cartList){
+  _renderCartItems(cartInfo){
     var cartItemList = [];
-    cartList.map((item,i)=>{
+    cartInfo.map((item,i)=>{
+      const image = item.image && item.image!==undefined?{uri:item.image}:require('../assets/img/img_logo.png')
       cartItemList.push
       (
-          <TouchableOpacity
-              key={i}
-              onPress={() => {}}
-              onLongPress={() => {}}>
-            <View style={styles.picStyle}>
-              <Badge value="2" status="error" containerStyle={{ position: 'absolute', top: -5, right: -5 }}/>
-              <Image resizeMode="contain" style={{width: 100, height: 80,}} source={{uri: item.thumburl}}/></View>
-          </TouchableOpacity>
+          <SwipeableView swipeableStyle={styles.picStyle}
+                         onDownSwipe={this.props._onUpdateCartCommodity(constants.CART_DOWN, item, i)}
+                         onUpSwipe={this.props._onUpdateCartCommodity(constants.CART_UP, item, i)}>
+            <Badge value={item.amount} status="error" containerStyle={{ position: 'absolute', top: -5, right: -5 }}/>
+            <Image resizeMode="contain" style={{width: 100, height: 80,}} source={image}/>
+          </SwipeableView>
       );
-    })
+    });
     return cartItemList;
   };
 

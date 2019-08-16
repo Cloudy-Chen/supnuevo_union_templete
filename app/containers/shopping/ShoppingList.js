@@ -21,15 +21,14 @@ import {
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
 import {BottomToolBar} from "../../components/BottomToolBar";
-import unions from "../../test/unions";
 import {Avatar, Badge, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
-import {SCREEN_WIDTH} from "../../utils/tools";
+import {replaceMember, SCREEN_WIDTH} from "../../utils/tools";
 import ShoppingCart from "../../components/ShoppingCart";
 import {AISearchBar} from "../../components/AIServer";
 import IntroDivider from "../../components/IntroDivider";
-import goods from "../../test/goods";
-import cart from '../../test/cart';
+import constants from "../../resources/constants";
+import * as shoppingActions from '../../actions/shopping-actions';
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 export class ShoppingList extends Component {
@@ -37,7 +36,6 @@ export class ShoppingList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            cartList: cart,
             searchText: '',
             searchResult: [],
             showSearchResult:false,
@@ -49,8 +47,7 @@ export class ShoppingList extends Component {
     componentWillReceiveProps(nextProps) {}
 
     render() {
-        const cartList = this.state.cartList;
-        const cartNumber = cartList.length;
+        const cartNumber = this.props.cartInfo.length;
 
         return (
             <View style={styles.container}>
@@ -69,11 +66,8 @@ export class ShoppingList extends Component {
     _renderShoppingCart(){
         return(
             <ShoppingCart
-                cartList={this.state.cartList}
-                onUpSwipe={this._onUpSwipe}
-                onDownSwipe={this._onDownSwipe}
-                onLeftSwipe={this._onLeftSwipe}
-                onRightSwipe={this._onRightSwipe}
+                cartInfo={this.props.cartInfo}
+                _onUpdateCartCommodity={(type, item, idx)=>this._onUpdateCartCommodity(type, item, idx)}
             />
         );
     }
@@ -127,13 +121,16 @@ export class ShoppingList extends Component {
 
     _onMicrophonePress = ()=>{};
 
-    _onUpSwipe =()=>{};
-
-    _onDownSwipe =()=>{};
-
-    _onLeftSwipe =()=>{};
-
-    _onRightSwipe =()=>{};
+    _onUpdateCartCommodity(type, item, i){
+        var new_item = item;
+        switch (type) {
+            case constants.CART_UP:new_item = Object.assign(item,{amount: amount+1});break;
+            case constants.CART_DOWN:new_item = Object.assign(item,{amount: amount-1});break;
+        }
+        var cartInfo = replaceMember(this.props.cartInfo,new_item,i);
+        this.dispatch(shoppingActions.setCartInfo(cartInfo));
+        this.dispatch(shoppingActions.updateCartInfo(item.itemId,item.commodityId,item.amount,this.props.unionId))
+    };
 
     _searchTextChange = (text) => {
         this.setState({searchText: text,showSearchResult: true});
@@ -199,7 +196,10 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
     auth: state.get('auth'),
     root: state.get('root'),
-    data: state.get('data'),
+    union: state.get("union"),
+    unionId: state.get("union").get("unionId"),
+    shopping: state.get('shopping'),
+    cartInfo: state.get('shopping').get("cartInfo"),
 });
 
 export default connect(mapStateToProps)(ShoppingList)

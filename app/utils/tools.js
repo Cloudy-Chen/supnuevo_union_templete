@@ -179,6 +179,14 @@ export function addMember(list,item) {
   return list;
 }
 
+export function replaceMember(list,item,idx) {
+  // idx 删除起始位置
+  // n 删除元素个数
+  // item 替换元素
+  list = list.splice(idx,1,item);
+  return list;
+}
+
 export function getNow() {
   var date = new Date();
 

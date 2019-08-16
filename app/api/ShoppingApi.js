@@ -1,18 +1,29 @@
 /**
  * ShoppingApi.js
- * 应用需要访问的所有数据请求接口
  */
 
 import constants from "../resources/constants";
 import {post} from '../utils/httpUtils'
 
-// 获取表单数据列表
-export function getNotificationList (page) {
-  // const url = constants.SPORTS_HOT_TEST_BASE_URL + '/func/allow/getDataListByPage';
-  const url = constants.SPORTS_HOT_TEST_BASE_URL + '/func/node/getMallTestGoodsinfo';
+// 获取购物车商品信息
+export function getCustomerCartCommodityInfo (cartId) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/getCustomerCartCommodityInfo';
   const body = {
-    page: page,
-  }
+    cartId: cartId,
+  };
+
+  return post(url ,body);
+}
+
+// 更新购物车商品信息
+export function updateCustomerCartCommodity (itemId, commodityId, amount, unionId) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/updateCustomerCartCommodity';
+  const body = {
+    itemId: itemId,
+    commodityId: commodityId,
+    amount: amount,
+    unionId: unionId,
+  };
 
   return post(url ,body);
 }

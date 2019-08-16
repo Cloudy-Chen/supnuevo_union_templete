@@ -60,8 +60,8 @@ const initialState = new Immutable.Map({
     dataResponse: constants.INITIAL,
   }),
   shopping: Immutable.Map({
-    cartList:[],
-    commodityList:[]
+    cartInfo:[],
+    priceList:[]
   }),
   order: Immutable.Map({
   }),
