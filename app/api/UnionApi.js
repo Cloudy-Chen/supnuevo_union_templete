@@ -22,3 +22,40 @@ export function getUnionMemberList (unionId) {
 
   return post(url ,body);
 }
+
+// 获取折扣广告
+export function getSupnuevoBuyerUnionAdvertisementList(unionId, start, count) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/union/getSupnuevoBuyerUnionAdvertisementList';
+  const body = {
+    unionId: unionId,
+    start: start,
+    count: count,
+  };
+
+  return post(url ,body);
+}
+
+// 获取价格表
+export function getSupnuevoBuyerUnionPriceList(unionId, start, count) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/union/getSupnuevoBuyerUnionPriceList';
+  const body = {
+    unionId: unionId,
+    start: start,
+    count: count,
+  };
+
+  return post(url ,body);
+}
+
+// 搜索引擎获取价格表
+export function getSupnuevoBuyerUnionPriceListLucene(unionId, userInput, start, count) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/union/getSupnuevoBuyerUnionPriceListLucene';
+  const body = {
+    unionId: unionId,
+    userInput: userInput,
+    start: start,
+    count: count,
+  };
+
+  return post(url ,body);
+}

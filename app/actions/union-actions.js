@@ -37,24 +37,70 @@ export function setUnion(union){
 export function getUnionMemberList(unionId) {
   return {
     type: actions.GET_UNION_MEMBER_LIST_ACTION,
-    unionId:unionId
+    unionId: unionId
   };
 }
 
-export function getUnionMemberListSuccess(merchants) {
+export function getUnionMemberListSuccess(merchants, edges) {
   return {
-    type: actions.GET_UNION_LIST_SUCCESS,
+    type: actions.GET_UNION_MEMBER_LIST_SUCCESS,
     merchants: merchants,
+    edges: edges,
   }
 }
 
 export function getUnionMemberListFail(error) {
   return {
-    type: actions.GET_UNION_LIST_FAIL,
+    type: actions.GET_UNION_MEMBER_LIST_FAIL,
     error: error
   }
 }
 
+// 折扣广告
+export function getUnionAdvertisementList(unionId, start, count) {
+  return {
+    type: actions.GET_ADVERTISEMENT_LIST,
+    unionId: unionId,
+    start: start,
+    count: count,
+  };
+}
+
+// 价格表
+export function getUnionPriceList(unionId, start, count) {
+  return {
+    type: actions.GET_PRICE_LIST,
+    unionId: unionId,
+    start: start,
+    count: count,
+  };
+}
+
+export function getUnionPriceListLucene(unionId, userInput, start ,count) {
+  return {
+    type: actions.GET_PRICE_LIST_LUCENE,
+    unionId: unionId,
+    userInput: userInput,
+    start: start,
+    count: count,
+  };
+}
+
+export function getUnionPriceListLuceneSuccess(priceList ) {
+  return {
+    type: actions.GET_PRICE_LIST_LUCENE_SUCCESS,
+    priceList: priceList,
+  }
+}
+
+export function getUnionPriceListLuceneFail(error ) {
+  return {
+    type: actions.GET_PRICE_LIST_LUCENE_FAIL,
+    error: error,
+  }
+}
+
+//Common
 export function setUnionResponse(type,data) {
   return{
     type: type,

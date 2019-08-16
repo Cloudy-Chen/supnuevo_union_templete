@@ -4,6 +4,7 @@
 
 import * as actions from "../actions/action-types";
 
+// login
 export function login(username, password) {
   return {
     type: actions.LOGIN_ACTION,
@@ -35,6 +36,7 @@ export function resetLoginStatus() {
   }
 }
 
+// register
 export function register(username, telephone, password) {
   return {
     type: actions.REGISTER_ACTION,
@@ -65,6 +67,15 @@ export function setRegisterSuccess(username, password) {
   }
 }
 
+export function setCustomerDefaultMerchant(unionId, merchantId) {
+  return {
+    type: actions.SET_DEFAULT_MERCHANT,
+    unionId: unionId,
+    merchantId: merchantId,
+  }
+}
+
+// logout
 export function logout(authId, username, password) {
   return {
     type: actions.LOGOUT_ACTION,

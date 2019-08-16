@@ -87,5 +87,8 @@ module.exports = new LocalizedStrings({
     // union
     getUnionListFail: "获取联盟列表失败",
     getUnionMemberListFail: "获取超市列表失败",
+    getUnionAdvertisementListFail: "获取折扣广告失败",
+    getUnionPriceListFail: "获取价格表失败",
+    getUnionPriceListLuceneFail: "搜索失败",
   },
 });

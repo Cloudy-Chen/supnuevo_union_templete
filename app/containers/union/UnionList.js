@@ -68,13 +68,14 @@ export class UnionList extends Component {
 
   _renderUnionList(unions){
       return(
+          unions && unions.length>0?
           <View style={styles.listViewWrapper}>
               <ListView
                   style={styles.listView}
                   automaticallyAdjustContentInsets={false}
                   dataSource={ds.cloneWithRows(unions)}
                   renderRow={this._renderItem}/>
-          </View>
+          </View>:null
       );
   }
 
@@ -96,7 +97,7 @@ export class UnionList extends Component {
 
   _onUnionPress =(union) =>{
       this.props.dispatch(unionActions.setUnion(union));
-      this.props.navigation.push("UnionMemberList",{union:union});
+      this.props.navigation.push("UnionMemberList");
   }
 
 };

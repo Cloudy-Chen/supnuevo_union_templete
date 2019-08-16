@@ -54,6 +54,13 @@ function* register( action ) {
   }
 }
 
+function* setCustomerDefaultMerchant( action ) {
+  const {unionId, merchantId} = action;
+  try {
+    yield call(Api.setCustomerDefaultMerchant, unionId, merchantId);
+  } catch (error) {}
+}
+
 function* logOut() {
   try {
     const response = yield call(Api.logOut);
@@ -70,6 +77,7 @@ function* logOut() {
 export default [
   takeEvery(actions.LOGIN_ACTION,login),
   takeEvery(actions.REGISTER_ACTION,register),
+  takeEvery(actions.SET_DEFAULT_MERCHANT,setCustomerDefaultMerchant),
   takeEvery(actions.LOGOUT_ACTION,logOut),
 ]
 

@@ -5,17 +5,9 @@
 import React, {Component} from "react";
 import {
     Image,
-    StatusBar,
-    Text,
-    TouchableOpacity,
     View,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
     StyleSheet,
-    ScrollView,
-    ListView
+    ListView, KeyboardAvoidingView, Platform, SafeAreaView
 } from "react-native";
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
@@ -23,117 +15,171 @@ import {ACTION_BACK, BottomToolBar} from "../../components/BottomToolBar";
 import goods from "../../test/goods";
 import {Avatar, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
-import {SCREEN_WIDTH} from "../../utils/tools";
+import {getHeaderHeight, SCREEN_HEIGHT, SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
 import {AIAnswerBoard, AISearchBar} from '../../components/AIServer/index';
+import * as unionActions from "../../actions/union-actions";
+import constants from "../../resources/constants";
+import NetworkingError from "./UnionDiscount";
+import strings from "../../resources/strings";
+import RefreshListView from "../../components/RefreshListView";
+import {SpinnerWrapper} from "../../components/SpinnerLoading";
+import * as rootActions from "../../actions/root-actions";
 
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-export class UnionList extends Component {
+const count = constants.PRICE_LIST_PAGE;
 
-  constructor(props) {
-    super(props);
-      this.state = {
-          searchText: '',
-          showSearchResult: false,
-          searchResult: [],
-          selectedPrice: null,
-      };
-  }
+export class UnionPrice extends Component {
 
-    componentDidMount() {}
+    constructor(props) {
+        super(props);
+        this.state = {
+            start: 1,
+            searchText: '',
+            searchResult: [],
+            selectedPrice: null,
+            isSearchStatus: false,
+        };
+    }
 
-    componentWillReceiveProps(nextProps) {}
+    componentDidMount() {
+        this.props.dispatch(rootActions.setLoading(false));
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count));
+    }
 
-  render() {
-      return (
-          <View style={styles.container}>
-              <TopToolBar title = "价格表" navigation = {this.props.navigation}
-                          _onLeftIconPress={this._onVolumeIconPress}
-                          _onRightIconPress={this._onHelpIconPress}/>
-              {this._renderSearchBar()}
-              {this._renderPriceList()}
-              <BottomToolBar navigation = {this.props.navigation}
-                             leftAction={ACTION_BACK}
-                             _onLeftIconPress={this._onBackIconPress}/>
-          </View>
-      );
-  }
+    componentWillReceiveProps(nextProps) {
+        const Response = this.props.union.get('dataResponse');
+        const nextResponse = nextProps.union.get('dataResponse');
 
-    _renderSearchBar(){
-      return(
-          <AISearchBar
-              _onMicrophonePress={this._onMicrophonePress}
-              _searchTextChange={(text) => this._searchTextChange(text)}
-              _onSearchResultPress={this._onSearchResultPress}
-              showSearchResult = {this.state.showSearchResult}
-              searchResult = {this.state.searchResult}
-              searchText = {this.state.searchText}
-          />
-      );
-  }
+        if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_SUCCESS) {
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }else if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_FAIL){
+            showCenterToast(strings.getUnionPriceListLuceneFail);
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }
+    }
 
-    _renderPriceList(){
-        return(
-            <View style={styles.listViewWrapper}>
-                <ListView
-                    style={styles.listView}
-                    automaticallyAdjustContentInsets={false}
-                    dataSource={ds.cloneWithRows(goods)}
-                    renderRow={this._renderItem}/>
+    onHeaderRefresh = () => {
+        if(this.state.isSearchStatus)return;
+
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count));
+        this.setState({start: 1});
+    };
+
+    onFooterRefresh = () => {
+        if(this.state.isSearchStatus)return;
+
+        let curStart = this.state.start + 1;
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, this.state.searchText, curStart, count));
+        this.setState({start: curStart});
+    };
+
+    render() {
+        const loading = this.props.root.get('loading');
+
+        return (
+            <View style={styles.container}>
+                <TopToolBar title="价格表" navigation={this.props.navigation}
+                            _onLeftIconPress={this._onVolumeIconPress}
+                            _onRightIconPress={this._onHelpIconPress}/>
+                {this._renderSearchBar()}
+                {this._renderPriceList()}
+                <BottomToolBar navigation={this.props.navigation}
+                               leftAction={ACTION_BACK}
+                               _onLeftIconPress={this._onBackIconPress}/>
+                <SpinnerWrapper loading={loading} title={'搜索中,请稍候...'}/>
             </View>
         );
     }
 
-    _renderItem = (rowData,sectionId,rowId) => {
+    _renderSearchBar() {
+        return (
+            <AISearchBar
+                _onMicrophonePress={this._onMicrophonePress}
+                _searchTextChange={(text) => this._searchTextChange(text)}
+                _onSearchPress={this._onSearchPress}
+                searchResult={this.state.searchResult}
+                searchText={this.state.searchText}
+            />
+        );
+    }
+
+    _renderPriceList() {
+        const prices = this.props.union.get("priceList");
+        const datasError = this.props.union.get('datasError');
+        const refreshState = this.props.union.get('refreshState');
+
+        const priceList = prices && prices.length > 0 ? prices : [];
+
+        return (
+            datasError ?
+                <NetworkingError
+                    retry={() => this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count))}/>
+                :
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : null}
+                                      keyboardVerticalOffset={getHeaderHeight} style={styles.container}>
+                    <SafeAreaView style={styles.container}>
+                        <RefreshListView
+                            data={priceList}
+                            footerEmptyDataText={strings.noData}
+                            footerFailureText={strings.loadError}
+                            footerNoMoreDataText={strings.noMore}
+                            footerRefreshingText={strings.loading}
+                            ItemSeparatorComponent={() => <View style={styles.separator}/>}
+                            keyExtractor={(item, index) => `${index}`}
+                            onFooterRefresh={this.onFooterRefresh}
+                            onHeaderRefresh={this.onHeaderRefresh}
+                            refreshState={refreshState}
+                            renderItem={this.renderCell}
+                            style={styles.listView}
+                        />
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
+        );
+    }
+
+    renderCell = ({item, index}) => {
+        const priceList = this.props.union.get('priceList');
+        const price = priceList[index];
+
         return (
             <ListItem
-                leftElement={<Image source={{uri:rowData.thumburl}} style={styles.image}/>}
-                title={rowData.name}
-                subtitle={rowData.codigo}
+                title={price.nombre}
+                subtitle={price.codigo}
+                rightTitle={price.price}
+                style={styles.listItemStyle}
                 subtitleStyle={styles.subtitleText}
-                style={styles.listItemStyle}/>
+                rightTitleStyle={styles.rightTitle}
+            />
         );
     };
 
-    _onVolumeIconPress =() =>{};
+    _onVolumeIconPress = () => {
+    };
 
-    _onHelpIconPress =() =>{};
+    _onHelpIconPress = () => {
+    };
 
-    _onMicrophonePress = ()=>{};
+    _onMicrophonePress = () => {
+    };
 
-    _onBackIconPress = ()=>{this.props.navigation.pop()};
+    _onBackIconPress = () => {
+        this.props.navigation.pop()
+    };
 
     _searchTextChange = (text) => {
-        this.setState({searchText: text,showSearchResult: true});
+        this.setState({searchText: text});
         if (!text) {
             this._clearSearchInput()
             return;
         }
-        this._searchResultOfText(text);
     };
 
-    _searchResultOfText = (text)=>{
-        var searchResult = [];
-        goods.map((good,i)=>{
-            if(good.name.indexOf(text)!=-1){
-                searchResult.push(good);
-            }
-        });
-        this.setState({searchResult:searchResult})
+    _clearSearchInput = () => this.setState({searchText: ''})
+
+    _onSearchPress = () => {
+        this.setState({isSearchStatus: true});
+        this.props.dispatch(unionActions.getUnionPriceListLucene(this.props.unionId, this.state.searchText));
     };
-
-    _onSearchInputFocus = () => this.setState({showSearchResult:true})
-
-    _clearSearchInput = () => this.setState({searchText: '', showSearchResult: false,})
-
-    _onSearchResultPress = (item) => {
-        this.setState({
-            searchText: item.name,
-            showSearchResult: false,
-            selectedPrice: item,
-        })
-    }
-
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -147,9 +193,11 @@ const styles = StyleSheet.create({
     },
     listView:{
         flex:1,
+        marginBottom: 40,
     },
     listItemStyle:{
         flex:1,
+        width:SCREEN_WIDTH,
         borderBottomWidth: 0.8,
         borderColor: colors.saperatorLine,
     },
@@ -160,13 +208,25 @@ const styles = StyleSheet.create({
     subtitleText:{
         fontSize:14,
         color: colors.primaryGray
+    },
+    imageWrapper:{
+        flex: 1,
+    },
+    separator: {
+        height: 0.5,
+        backgroundColor: '#D5D5D5',
+    },
+    rightTitle:{
+        fontSize: 20,
+        color: colors.brightRed,
     }
 });
 
 const mapStateToProps = (state) => ({
     auth: state.get('auth'),
     root: state.get('root'),
-    data: state.get('data'),
+    union: state.get('union'),
+    unionId: state.get('union').get("union").unionId,
 });
 
-export default connect(mapStateToProps)(UnionList)
+export default connect(mapStateToProps)(UnionPrice)

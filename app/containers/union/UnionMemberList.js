@@ -6,6 +6,7 @@
 import React, {Component} from "react";
 import {
     Image,
+    ScrollView,
     View,
     StyleSheet,
     ListView
@@ -16,9 +17,10 @@ import {ACTION_DISCOUNT, ACTION_PRICE, BottomToolBar} from "../../components/Bot
 import unionMembers from "../../test/unionMembers";
 import {Avatar, Icon, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
-import {SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
+import {getHeaderHeight, SCREEN_HEIGHT, SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
 import {MicrosoftMap} from "../../components/rnMap";
 import * as unionActions from "../../actions/union-actions";
+import * as authActions from "../../actions/auth-actions";
 import constants from "../../resources/constants";
 import strings from "../../resources/strings";
 
@@ -28,12 +30,12 @@ export class UnionMemberList extends Component {
   constructor(props) {
     super(props);
       this.state = {
-          selectedMemberId:1,
+          selectedMerchantId:1,
       };
   }
 
     componentDidMount() {
-      const union = this.props.navigation.state.params.union;
+      const union = this.props.union.get("union");
       this.props.dispatch(unionActions.getUnionMemberList(union.unionId));
     }
 
@@ -51,15 +53,16 @@ export class UnionMemberList extends Component {
 
   render() {
 
-      const union = this.props.navigation.state.params.union;
+      const union = this.props.union.get("union");
       const merchants = this.props.union.get("merchants");
+      const edges = this.props.union.get("edges");
 
       return (
           <View style={styles.container}>
               <TopToolBar title = {union.unionName} navigation = {this.props.navigation}
                           _onLeftIconPress={this._onVolumeIconPress}
                           _onRightIconPress={this._onHelpIconPress}/>
-              {this._renderMap(merchants)}
+              {this._renderMap(edges, merchants)}
               {this._renderUnionList(merchants)}
               <BottomToolBar navigation = {this.props.navigation}
                              leftAction = {ACTION_DISCOUNT}
@@ -70,9 +73,9 @@ export class UnionMemberList extends Component {
       );
   }
 
-  _renderMap(merchants){
+  _renderMap(edges, merchants){
       return (
-          <MicrosoftMap/>
+          <MicrosoftMap edges={edges} merchants={merchants}/>
       );
   }
 
@@ -92,9 +95,11 @@ export class UnionMemberList extends Component {
         const image = rowData.image && rowData.image!==undefined?{uri:rowData.image}:require('../../assets/img/img_logo.png')
         return (
             <ListItem
-                leftElement={<Image source={image} style={styles.image}/>}
-                rightIcon={rowData.memberId === this.state.selectedMemberId?<Icon name='md-checkmark' type='ionicon' color={colors.primaryGray}/>:null}
-                title={rowData.address}
+                leftElement={<Image source={image} style={styles.image} resizeMode={"contain"}/>}
+                rightIcon={rowData.merchantId === this.state.selectedMerchantId?<Icon name='md-checkmark' type='ionicon' color={colors.primaryGray}/>:null}
+                title={rowData.nubre}
+                subtitle={rowData.direccion}
+                subtitleStyle={styles.subTitleStyle}
                 style={styles.listItemStyle}
                 onPress={()=>this._onUnionMember(rowData)}/>
         );
@@ -108,7 +113,12 @@ export class UnionMemberList extends Component {
 
   _onPricePress =() =>{this.props.navigation.push("UnionPrice")};
 
-  _onUnionMember =(member) =>{this.setState({selectedMemberId:member.memberId})};
+  _onUnionMember =(member) =>{
+      const unionId = this.props.union.get("union").unionId;
+      const merchantId = member.merchantId;
+      this.setState({selectedMerchantId:merchantId});
+      this.props.dispatch(authActions.setCustomerDefaultMerchant(unionId, merchantId));
+  };
 
 };
 
@@ -120,7 +130,8 @@ const styles = StyleSheet.create({
     },
     listViewWrapper:{
         width:SCREEN_WIDTH,
-        flex:1,
+        height:SCREEN_HEIGHT/3,
+        marginBottom: getHeaderHeight()
     },
     listView:{
         flex:1,
@@ -133,6 +144,10 @@ const styles = StyleSheet.create({
     image:{
         width:90,
         height:60,
+    },
+    subTitleStyle:{
+        marginTop:5,
+        color:colors.primaryGray
     }
 });
 

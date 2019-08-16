@@ -12,7 +12,6 @@ export default class AISearchBar extends React.PureComponent {
         super(props);
         this.state = {
             searchText: '',
-            showSearchResult: false,
         }
     }
 
@@ -34,44 +33,13 @@ export default class AISearchBar extends React.PureComponent {
                             onFocus={this.props._onSearchInputFocus}
                         />
                     </View>
+                    <TouchableOpacity style={styles.searchIcon} onPress={this.props._onSearchPress}>
+                        <Ionicons name={'md-search'} size={25} color={colors.primaryDarkGray}/>
+                    </TouchableOpacity>
                 </View>
-                {this._renderSearchResult()}
             </View>
             </KeyboardAvoidingView>
         );
-    }
-
-    _renderSearchResult = () => {
-        const {searchResult, showSearchResult} = this.props;
-
-        if (!showSearchResult) return null;
-        if (!searchResult) return null;
-
-        let searchResultsCustomStyle = {height: 210,borderTopWidth:0.5,borderColor:colors.primaryGray}
-        if (searchResult.length < 3) {
-            searchResultsCustomStyle = {height: 70 * searchResult.length,borderTopWidth:0.5,borderColor:colors.primaryGray}
-        }
-
-        let resultView = searchResult.map((item, index) => {
-            return (
-                <TouchableOpacity key={index} onPress={() => {this.props._onSearchResultPress(item)}}>
-                    <View style={styles.searchResultContainer}>
-                        <View style={styles.searchResultRightContainer}>
-                            <Text numberOfLines={1} style={styles.searchResultTitle}>{item.name}</Text>
-                            <Text numberOfLines={1} style={styles.searchResultSubTitle}>{item.codigo}</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )
-        })
-
-        return (
-            <View style={[styles.searchResultsContainer, searchResultsCustomStyle]}>
-                <ScrollView>
-                    {resultView}
-                </ScrollView>
-            </View>
-        )
     }
 
 }
@@ -102,6 +70,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         borderLeftWidth: StyleSheet.hairlineWidth,
         borderLeftColor: '#c8c7cc',
+        borderRightWidth: StyleSheet.hairlineWidth,
+        borderRightColor: '#c8c7cc',
     },
     inputStyle: {
         height: 30,
@@ -112,43 +82,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: colors.primaryColor,
         paddingRight: 10,
-    },
-    noSearchResultContainer: {
-        padding: 10,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: '#c8c7cc',
-        borderTopWidth: 0
-    },
-    noSearchResultTxt: {
-        fontSize: 18,
-        color: '#030303'
-    },
-    searchResultsContainer: {
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: '#c8c7cc',
-        borderTopWidth: 0.5,
-        height: 70,
-        width: constants.SCREEN_WIDTH,
-    },
-    searchResultContainer: {
-        height: 70,
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#c8c7cc'
-    },
-    searchResultRightContainer: {
-        flex: 1,
-        paddingLeft: 20
-    },
-    searchResultTitle: {
-        fontSize: 18,
-        color: '#030303'
-    },
-    searchResultSubTitle: {
-        fontSize: 12,
-        color: '#b2b2b2',
-        marginTop: 5
     },
 });

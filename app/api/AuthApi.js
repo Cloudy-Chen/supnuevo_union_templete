@@ -27,6 +27,17 @@ export function getSupnuevoCustomerInfo (session) {
   return post(url ,body);
 }
 
+// 设置用户初始超市
+export function setCustomerDefaultMerchant (unionId, merchantId) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/setCustomerDefaultMerchant';
+  const body = {
+    unionId: unionId,
+    merchantId: merchantId,
+  };
+
+  return post(url ,body);
+}
+
 // 注册
 export function supnuevoCustomerRegister (username, telephone, password) {
   const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/supnuevoCustomerRegister';

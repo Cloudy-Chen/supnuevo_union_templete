@@ -35,6 +35,10 @@ export default function authReducer(state, action = {}) {
     case actions.RESET_LOGIN_STATUS:
       return state.withMutations(state => state
           .set('loginError',''));
+    case actions.SET_DEFAULT_MERCHANT:
+      return state.withMutations(state => state
+          .set('unionId', action.unionId)
+          .set('merchantId', action.merchantId));
     case actions.LOGOUT_SUCCESS:
       return state.withMutations(state => state
           .set('isLoggedIn', false)
