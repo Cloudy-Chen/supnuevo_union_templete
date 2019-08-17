@@ -86,9 +86,9 @@ function* getUnionPriceList (action) {
     const {unionId, start, count} = action;
 
     if (start === 0) {
-      yield put({ type: actions.ADVERTISEMENT_LIST_REFRESHING });
+      yield put({ type: actions.PRICE_LIST_REFRESHING });
     } else {
-      yield put({ type: actions.ADVERTISEMENT_LIST_LOADING });
+      yield put({ type: actions.PRICE_LIST_LOADING });
     }
     const response = yield call(Api.getSupnuevoBuyerUnionPriceList,unionId, start, count);
     if(response.re === 1) {

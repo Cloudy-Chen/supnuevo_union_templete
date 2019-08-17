@@ -23,30 +23,77 @@ import {TopToolBar} from "../../components/TopToolBar";
 import {BottomToolBar} from "../../components/BottomToolBar";
 import {Avatar, Badge, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
-import {replaceMember, SCREEN_WIDTH} from "../../utils/tools";
+import {getHeaderHeight, replaceMember, SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
 import ShoppingCart from "../../components/ShoppingCart";
 import {AISearchBar} from "../../components/AIServer";
 import IntroDivider from "../../components/IntroDivider";
 import constants from "../../resources/constants";
 import * as shoppingActions from '../../actions/shopping-actions';
+import * as unionActions from '../../actions/union-actions';
+import * as rootActions from "../../actions/root-actions";
+import strings from "../../resources/strings";
+import {SpinnerWrapper} from "../../components/SpinnerLoading";
+import NetworkingError from "../union/UnionPrice";
+import RefreshListView from "../../components/RefreshListView";
 
-let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+const count = constants.PRICE_LIST_PAGE;
+
 export class ShoppingList extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            start: 1,
             searchText: '',
             searchResult: [],
-            showSearchResult:false,
+            selectedPrice: null,
+            isSearchStatus: false,
         };
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        this.props.dispatch(rootActions.setLoading(false));
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count));
+        this.props.dispatch(shoppingActions.getCartInfo(this.props.cartId));
+    }
 
-    componentWillReceiveProps(nextProps) {}
+    componentWillReceiveProps(nextProps) {
+        const Response = this.props.union.get('dataResponse');
+        const nextResponse = nextProps.union.get('dataResponse');
+
+        // 搜索引擎
+        if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_SUCCESS) {
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }else if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_FAIL){
+            showCenterToast(strings.getUnionPriceListLuceneFail);
+            this.props.dispatch(unionActions.resetUnionResponse());
+        }
+        // 购物车
+        if (Response === constants.INITIAL && nextResponse === constants.GET_CART_INFO_SUCCESS) {
+            this.props.dispatch(shoppingActions.resetShoppingResponse());
+        }else if (Response === constants.INITIAL && nextResponse === constants.GET_CART_INFO_FAIL){
+            showCenterToast(strings.getCartInfoFail);
+            this.props.dispatch(shoppingActions.resetShoppingResponse());
+        }
+    }
+
+    onHeaderRefresh = () => {
+        if(this.state.isSearchStatus)return;
+
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count));
+        this.setState({start: 1});
+    };
+
+    onFooterRefresh = () => {
+        if(this.state.isSearchStatus)return;
+
+        let curStart = this.state.start + 1;
+        this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, this.state.searchText, curStart, count));
+        this.setState({start: curStart});
+    };
 
     render() {
+        const loading = this.props.root.get('loading');
         const cartNumber = this.props.cartInfo.length;
 
         return (
@@ -59,6 +106,7 @@ export class ShoppingList extends Component {
                 {this._renderSearchBar()}
                 {this._renderPriceList()}
                 <BottomToolBar navigation = {this.props.navigation}/>
+                <SpinnerWrapper loading={loading} title={'搜索中,请稍候...'}/>
             </View>
         );
     }
@@ -67,53 +115,73 @@ export class ShoppingList extends Component {
         return(
             <ShoppingCart
                 cartInfo={this.props.cartInfo}
-                _onUpdateCartCommodity={(type, item, idx)=>this._onUpdateCartCommodity(type, item, idx)}
+                _onUpdateCartCommodity={this._onUpdateCartCommodity}
             />
         );
     }
 
-    _renderSearchBar(){
-        return(
+    _renderSearchBar() {
+        return (
             <AISearchBar
                 _onMicrophonePress={this._onMicrophonePress}
                 _searchTextChange={(text) => this._searchTextChange(text)}
-                _onSearchResultPress={this._onSearchResultPress}
-                showSearchResult = {false}
-                searchResult = {this.state.searchResult}
-                searchText = {this.state.searchText}
+                _onSearchPress={this._onSearchPress}
+                searchResult={this.state.searchResult}
+                searchText={this.state.searchText}
             />
         );
     }
 
-    _renderPriceList(){
+    _renderPriceList() {
+        const prices = this.props.union.get("priceList");
+        const datasError = this.props.union.get('datasError');
+        const refreshState = this.props.union.get('refreshState');
 
-        var priceList = [];
-        goods.map((good,i)=>{
-            if(good.name.indexOf(this.state.searchText) !== -1)priceList.push(good);
-        })
+        const priceList = prices && prices.length > 0 ? prices : [];
 
-        return(
-            <View style={styles.listViewWrapper}>
-                <ListView
-                    style={styles.listView}
-                    automaticallyAdjustContentInsets={false}
-                    dataSource={ds.cloneWithRows(priceList)}
-                    renderRow={this._renderItem}/>
-            </View>
+        return (
+            datasError ?
+                <NetworkingError
+                    retry={() => this.props.dispatch(unionActions.getUnionPriceList(this.props.unionId, 0, count))}/>
+                :
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : null}
+                                      keyboardVerticalOffset={getHeaderHeight} style={styles.container}>
+                    <SafeAreaView style={styles.container}>
+                        <RefreshListView
+                            data={priceList}
+                            footerEmptyDataText={strings.noData}
+                            footerFailureText={strings.loadError}
+                            footerNoMoreDataText={strings.noMore}
+                            footerRefreshingText={strings.loading}
+                            ItemSeparatorComponent={() => <View style={styles.separator}/>}
+                            keyExtractor={(item, index) => `${index}`}
+                            onFooterRefresh={this.onFooterRefresh}
+                            onHeaderRefresh={this.onHeaderRefresh}
+                            refreshState={refreshState}
+                            renderItem={this.renderCell}
+                            style={styles.listView}
+                        />
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
         );
     }
 
-    _renderItem = (rowData,sectionId,rowId) => {
+    renderCell = ({item, index}) => {
+        const priceList = this.props.union.get('priceList');
+        const price = priceList[index];
+
         return (
             <ListItem
-                leftElement={<Image source={{uri:rowData.thumburl}} style={styles.image}/>}
-                title={rowData.name}
-                subtitle={rowData.price}
-                subtitleStyle={styles.subtitleText}
+                title={price.nombre}
+                subtitle={price.codigo}
+                rightTitle={price.price}
                 style={styles.listItemStyle}
-                badge={{ value: rowData.discount, status: 'warning'}}/>
+                subtitleStyle={styles.subtitleText}
+                rightTitleStyle={styles.rightTitle}
+                onPress={() => this._onPriceListCommodityPress(price,index)}
+            />
         );
-    };
+    }
 
     _onVolumeIconPress =() =>{};
 
@@ -121,45 +189,43 @@ export class ShoppingList extends Component {
 
     _onMicrophonePress = ()=>{};
 
-    _onUpdateCartCommodity(type, item, i){
-        var new_item = item;
-        switch (type) {
-            case constants.CART_UP:new_item = Object.assign(item,{amount: amount+1});break;
-            case constants.CART_DOWN:new_item = Object.assign(item,{amount: amount-1});break;
-        }
-        var cartInfo = replaceMember(this.props.cartInfo,new_item,i);
-        this.dispatch(shoppingActions.setCartInfo(cartInfo));
-        this.dispatch(shoppingActions.updateCartInfo(item.itemId,item.commodityId,item.amount,this.props.unionId))
+    _onUpdateCartCommodity = (type, item, i) =>{
+        // var new_item = item;
+        // switch (type) {
+        //     case constants.CART_UP:new_item = Object.assign(item,{amount: amount+1});break;
+        //     case constants.CART_DOWN:new_item = Object.assign(item,{amount: amount-1});break;
+        // }
+        // var cartInfo = replaceMember(this.props.cartInfo,new_item,i);
+        // this.dispatch(shoppingActions.setCartInfo(cartInfo));
+        // this.dispatch(shoppingActions.updateCartInfo(item.itemId,item.commodityId,item.amount,this.props.unionId))
     };
 
     _searchTextChange = (text) => {
-        this.setState({searchText: text,showSearchResult: true});
+        this.setState({searchText: text});
         if (!text) {
             this._clearSearchInput()
             return;
         }
-        this._searchResultOfText(text);
     };
 
-    _searchResultOfText = (text)=>{
-        var searchResult = [];
-        goods.map((good,i)=>{
-            if(good.name.indexOf(text)!=-1){
-                searchResult.push(good);
-            }
-        });
-        this.setState({searchResult:searchResult})
+    _clearSearchInput = () => this.setState({searchText: ''})
+
+    _onSearchPress = () => {
+        this.setState({isSearchStatus: true});
+        this.props.dispatch(unionActions.getUnionPriceListLucene(this.props.unionId, this.state.searchText));
     };
 
-    _onSearchInputFocus = () => this.setState({showSearchResult:true})
+    _onPriceListCommodityPress = (price, index) => this.props.dispatch(shoppingActions.updateCartInfo(this._transFromPriceToCartInfo(price, constants.CART_CREATE), this.props.unionId))
 
-    _clearSearchInput = () => this.setState({searchText: '', showSearchResult: false,})
-
-    _onSearchResultPress = (item) => {
-        this.setState({
-            searchText: item.name,
-            showSearchResult: false,
-        })
+    _transFromPriceToCartInfo(price, type){
+        var amount =1;
+        switch (type) {
+            case constants.CART_CREATE:amount=1;break;
+            case constants.CART_ADD:amount=price.amount+1;break;
+            case constants.CART_DECLINE:amount=price.amount-1;break;
+        }
+        const carInfo = {itemId: price.itemId, commodityId: price.commodityId, amount: amount};
+        return carInfo;
     }
 
 };
@@ -176,9 +242,11 @@ const styles = StyleSheet.create({
     },
     listView:{
         flex:1,
+        marginBottom: 40,
     },
     listItemStyle:{
         flex:1,
+        width:SCREEN_WIDTH,
         borderBottomWidth: 0.8,
         borderColor: colors.saperatorLine,
     },
@@ -197,7 +265,8 @@ const mapStateToProps = (state) => ({
     auth: state.get('auth'),
     root: state.get('root'),
     union: state.get("union"),
-    unionId: state.get("union").get("unionId"),
+    unionId: state.get('auth').get("unionId"),
+    cartId: state.get("auth").get("cartId"),
     shopping: state.get('shopping'),
     cartInfo: state.get('shopping').get("cartInfo"),
 });

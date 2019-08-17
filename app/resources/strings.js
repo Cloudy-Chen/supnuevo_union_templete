@@ -93,5 +93,6 @@ module.exports = new LocalizedStrings({
 
     //shopping
     getCartInfoFail: "获取购物车信息失败",
+    updateCartInfoFail: "修改购物车信息失败",
   },
 });

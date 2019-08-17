@@ -187,6 +187,18 @@ export function replaceMember(list,item,idx) {
   return list;
 }
 
+export function updateCartInfo(cartInfo, cartInfoItem){
+  var idx = -1;
+  var updateCartInfo;
+  cartInfo.map((item,i)=>{
+    if(item.itemId === cartInfoItem.itemId){
+      idx = i;
+    }
+  });
+  updateCartInfo = (idx === -1)?[...cartInfo,cartInfoItem]:cartInfo.splice(idx,1,cartInfoItem);
+  return updateCartInfo;
+}
+
 export function getNow() {
   var date = new Date();
 

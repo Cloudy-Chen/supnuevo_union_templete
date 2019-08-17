@@ -43,8 +43,10 @@ const initialState = new Immutable.Map({
     username: '',
     password: '',
     sessionId: '',
-    customerInfo: null,
     personInfo: null,
+    unionId: '',
+    merchantId: '',
+    cartId: '',
   }),
   union: Immutable.Map({
     union: null,
@@ -60,8 +62,7 @@ const initialState = new Immutable.Map({
     dataResponse: constants.INITIAL,
   }),
   shopping: Immutable.Map({
-    cartInfo:[],
-    priceList:[]
+    cartInfo:[]
   }),
   order: Immutable.Map({
   }),
@@ -78,9 +79,9 @@ export default function configureStore() {
       store,
       {
         storage: AsyncStorage,
-        whitelist: ['auth','union'],
+        whitelist: ['auth','union','shopping'],
         transforms: [
-          saveSubsetFilter(['username','password','sessionId','customerInfo','unions','merchants'])
+          saveSubsetFilter(['username','password','sessionId','union','cartInfo',])
         ],
       }
   );

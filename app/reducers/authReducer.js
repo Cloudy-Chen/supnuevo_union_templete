@@ -17,7 +17,9 @@ export default function authReducer(state, action = {}) {
           .set('sessionId', action.sessionId)
           .set('username', action.username)
           .set('password', action.password)
-          .set('customerInfo', action.customerInfo));
+          .set('unionId', action.customerInfo.unionId)
+          .set('merchantId',action.customerInfo.merchantId)
+          .set('cartId',action.customerInfo.cartId));
     case actions.REGISTER_ERROR:
       return state.withMutations(state => state
           .set('isRegisterSuccess', false)
@@ -39,6 +41,9 @@ export default function authReducer(state, action = {}) {
       return state.withMutations(state => state
           .set('unionId', action.unionId)
           .set('merchantId', action.merchantId));
+    case actions.SET_CUSTOMER_CART:
+      return state.withMutations(state => state
+          .set('cartId', action.cartId));
     case actions.LOGOUT_SUCCESS:
       return state.withMutations(state => state
           .set('isLoggedIn', false)

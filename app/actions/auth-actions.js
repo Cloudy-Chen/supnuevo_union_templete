@@ -75,6 +75,13 @@ export function setCustomerDefaultMerchant(unionId, merchantId) {
   }
 }
 
+export function setCustomerCart(cartId) {
+  return {
+    type: actions.SET_CUSTOMER_CART,
+    cartId: cartId,
+  }
+}
+
 // logout
 export function logout(authId, username, password) {
   return {
