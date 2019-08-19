@@ -3,6 +3,7 @@
  */
 
 import * as actions from "../actions/action-types";
+import constants from "../resources/constants";
 
 export default function authReducer(state, action = {}) {
   switch (action.type) {
@@ -19,7 +20,8 @@ export default function authReducer(state, action = {}) {
           .set('password', action.password)
           .set('unionId', action.customerInfo.unionId)
           .set('merchantId',action.customerInfo.merchantId)
-          .set('cartId',action.customerInfo.cartId));
+          .set('cartId',action.customerInfo.cartId)
+          .set('customerInfo',action.customerInfo));
     case actions.REGISTER_ERROR:
       return state.withMutations(state => state
           .set('isRegisterSuccess', false)
@@ -44,6 +46,15 @@ export default function authReducer(state, action = {}) {
     case actions.SET_CUSTOMER_CART:
       return state.withMutations(state => state
           .set('cartId', action.cartId));
+    case actions.ADD_RECEIVER_INFO_SUCCESS:
+      return state.withMutations(state => state
+          .set('customerInfo', action.customerInfo)
+          .set('dataResponse', action.type)
+          .set('dataError', ''));
+    case actions.ADD_RECEIVER_INFO_FAIL:
+      return state.withMutations(state => state
+          .set('dataResponse', action.type)
+          .set('dataError', action.error));
     case actions.LOGOUT_SUCCESS:
       return state.withMutations(state => state
           .set('isLoggedIn', false)
@@ -54,6 +65,10 @@ export default function authReducer(state, action = {}) {
       return state.withMutations(state => state
           .set('isLoggedIn', false)
           .set('loginError', action.error));
+    case actions.RESET_AUTH_RESPONSE:
+      return state.withMutations(state => state
+          .set('dataResponse', constants.INITIAL)
+          .set('dataError', ''));
     case actions.RESET_AUTH:
       return state.withMutations(state => state
           .set('isLoggedIn', false)

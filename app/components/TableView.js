@@ -2,7 +2,6 @@ import React from 'react';
 import {View, Image, StyleSheet, TextInput, ViewPropTypes, Text, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import colors from '../resources/colors';
-import {SCREEN_WIDTH} from "../utils/tools";
 
 export default class TableView extends React.PureComponent {
   static propTypes = {
@@ -47,19 +46,20 @@ export default class TableView extends React.PureComponent {
   }
 
   _renderInfoList(dataList){
+    if(!dataList || dataList.length<=0) return;
     var dataListView = [];
     dataList.map((dataListItem,i)=>{
-      const dataRow = dataListItem.item;
+      const dataRow = dataListItem;
       var dataRowList = [];
-      dataRow.map((dataRowItem,i)=>{
-        dataRowList.push(
+      if(dataRow && dataRow.length>0){
+        dataRow.map((dataRowItem,i)=>{
+          dataRowList.push(
             <View style={styles.tableItemStyle}><Text style={styles.headerItemTextStyle}>{dataRowItem}</Text></View>
-        );
-      })
-      dataListView.push(
-          <View style={styles.tableWrapperStyle}>{dataRowList}</View>
-      );
-    });
+          );
+        });
+        dataListView.push(
+            <View style={styles.tableWrapperStyle}>{dataRowList}</View>
+        );}});
 
     return dataListView;
   }

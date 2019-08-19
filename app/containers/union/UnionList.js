@@ -96,7 +96,7 @@ export class UnionList extends Component {
   _onHelpIconPress =() =>{};
 
   _onUnionPress =(union) =>{
-      this.props.dispatch(unionActions.setUnion(union));
+      this.props.dispatch(unionActions.setDefaultUnionAndMerchant(union,null));
       this.props.navigation.push("UnionMemberList");
   }
 

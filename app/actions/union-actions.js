@@ -25,11 +25,11 @@ export function getUnionListFail(error) {
   }
 }
 
-// 联盟
-export function setUnion(union){
+export function setDefaultUnionAndMerchant(union, merchant){
   return{
-    type: actions.SET_UNION,
+    type: actions.SET_DEFAULT_UNION_AND_MERCHANT,
     union: union,
+    merchant: merchant
   }
 }
 

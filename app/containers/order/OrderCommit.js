@@ -5,10 +5,16 @@
 // 组件
 import React, {Component} from "react";
 import {Image, StatusBar, Text, TouchableOpacity, View, Dimensions, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, ScrollView} from "react-native";
-import {isEmptyObject, isObject, getHeaderHeight, SCREEN_WIDTH, SCREEN_HEIGHT} from "../../utils/tools";
+import {
+    isEmptyObject,
+    isObject,
+    getHeaderHeight,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    showCenterToast
+} from "../../utils/tools";
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
-import IntroDivider from "../shopping/ShoppingList";
 import {ACTION_BACK, BottomToolBar,ACTION_HISTORY,ACTION_RULE} from "../../components/BottomToolBar";
 import {InformationItem,TYPE_TEXT} from "../../components/InformationItem";
 import {Button, CheckBox} from "react-native-elements";
@@ -17,22 +23,60 @@ import colors from '../../resources/colors'
 import strings from "../../resources/strings";
 import constants from "../../resources/constants";
 import TableView from "../../components/TableView";
-import order_cart from '../../test/order_cart';
-import order_discount from '../../test/order_discount';
+import * as orderActions from "../../actions/order-actions";
+import * as authActions from "../../actions/auth-actions";
+import {transFromOrderItemToArray, transFromDiscountItemToArray, toDecimal2} from '../../utils/tools';
+import Modal from "react-native-modalbox";
+import {InputWithClearButton, InputWithActionSheet, InputWithCalendar} from '../../components/multiFuncTextInput/index'
+
+let receiverNameList = [];
+let receiverPhoneList = [];
+let receiverAddrList = [];
 
 export class OrderCommit extends Component {
 
   constructor(props) {
     super(props);
       this.state = {
-          pickChecked:false,
-          deliverChecked:false,
+          deliveryInfo: {receiverName:'',receiverPhone:'',receiverAddr:'',deliveryType:constants.SELF_DELIVERY},
+          deliveryAddType: constants.ADDR_TYPE,
+          deliveryTextInput: "",
       };
   }
+
+    componentDidMount() {
+        this.props.dispatch(orderActions.getOrderPrevInfo());
+    }
+
     componentWillReceiveProps(nextProps) {
+        const orderResponse = this.props.order.get('dataResponse');
+        const nextOrderResponse = nextProps.order.get('dataResponse');
+
+        // 获取当前订单
+        if (orderResponse === constants.INITIAL && nextOrderResponse === constants.GET_PREV_ORDER_SUCCESS) {
+            this.props.dispatch(orderActions.resetOrderResponse());
+        }else if (orderResponse === constants.INITIAL && nextOrderResponse === constants.GET_PREV_ORDER_FAIL){
+            showCenterToast(strings.getPrevOrderFail);
+            this.props.dispatch(orderActions.resetOrderResponse());
+        }
+        // 提交订单
+        if (orderResponse === constants.INITIAL && nextOrderResponse === constants.SUBMIT_ORDER_INFO_SUCCESS) {
+            this.props.dispatch(orderActions.resetOrderResponse());
+        }else if (orderResponse === constants.INITIAL && nextOrderResponse === constants.SUBMIT_ORDER_INFO_FAIL){
+            showCenterToast(strings.submitOrderFail);
+            this.props.dispatch(orderActions.resetOrderResponse());
+        }
     }
 
   render() {
+      const orderItemList = this.props.order.get("orderItemList");
+      const discountItemList = this.props.order.get("discountItemList");
+      const totalFee = this.props.order.get("totalFee");
+      const discountFee = this.props.order.get("discountFee");
+      const totalFeeFinal = this.props.order.get("totalFeeFinal");
+
+      this._getDeliverInfo();
+
     return (
         <View style={styles.container}>
             <TopToolBar title = "订单" navigation = {this.props.navigation}
@@ -42,11 +86,12 @@ export class OrderCommit extends Component {
             <View style={styles.scrollViewContanier}>
             {this._renderBasicInfo()}
             {this._renderDeliverInfo()}
-            {this._renderCartInfo()}
-            {this._renderDiscountInfo()}
+            {this._renderCartInfo(orderItemList, totalFee)}
+            {this._renderDiscountInfo(discountItemList, discountFee, totalFeeFinal)}
             {this._renderCommitButton()}
             </View>
             </ScrollView>
+            {this._renderModal()}
             <BottomToolBar navigation = {this.props.navigation}
                            leftAction={ACTION_HISTORY}
                            _onLeftIconPress={this._onHistoryIconPress}
@@ -58,56 +103,68 @@ export class OrderCommit extends Component {
   }
 
   _renderBasicInfo(){
+      const customerInfo = this.props.auth.get("customerInfo");
+      const merchant = this.props.union.get("merchant");
+
       return(
           <View style={styles.basicInfoContainer}>
-              <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {"11549878988"}/>
-              <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {"11436677689"}/>
-              <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {"San Lorenzo 2032"}/>
+              <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {customerInfo.receiverNames}/>
+              <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {merchant.cuit}/>
+              <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {merchant.direccion}/>
           </View>
       );
   }
 
   _renderDeliverInfo(){
+      var {deliveryType} = this.state.deliveryInfo;
       return(
         <View style={styles.deliverInfoCard}>
-            <CheckBox title={strings.type_pick} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={this.state.pickChecked} onPress={() => this.setState({pickChecked: !this.state.pickChecked})}/>
-            <CheckBox title={strings.type_deliver} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={this.state.deliverChecked} onPress={() => this.setState({deliverChecked: !this.state.deliverChecked})}/>
-            <OrderDropdownCell defaultValue={strings.deliverAddress_input} dataList={constants.deliverAddressList} onDropDownSelect={this._onDeliverAddressSelect} onButtonPress={this._onDeliverAddressPress}/>
-            <OrderDropdownCell defaultValue={strings.pickMobile_input} dataList={constants.pickMobileList} onDropDownSelect={this._onPickMobileSelect} onButtonPress={this._onPickMobilePress}/>
-            <OrderDropdownCell defaultValue={strings.pickName_input} dataList={constants.pickNameList} onDropDownSelect={this._onPickNameSelect} onButtonPress={this._onPickNamePress}/>
+            <CheckBox title={strings.self_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.SELF_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.SELF_DELIVERY})})}/>
+            <CheckBox title={strings.common_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.COMMON_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.COMMON_DELIVERY})})}/>
+            <OrderDropdownCell defaultValue={strings.receiverAddr_input} dataList={receiverAddrList} onDropDownSelect={this._onReceiverAddrSelect} onButtonPress={this._onReceiverAddrPress}/>
+            <OrderDropdownCell defaultValue={strings.receiverPhone_input} dataList={receiverPhoneList} onDropDownSelect={this._onReceiverPhoneSelect} onButtonPress={this._onReceiverPhonePress}/>
+            <OrderDropdownCell defaultValue={strings.receiverName_input} dataList={receiverNameList} onDropDownSelect={this._onReceiverNameSelect} onButtonPress={this._onReceiverNamePress}/>
         </View>
       );
   }
 
-     _renderCartInfo(){
+     _renderCartInfo(orderItemList, totalFee){
+      var orderItemArray = [];
+      if(orderItemList && orderItemList.length>0)
+      orderItemList.map((orderItem,i)=>{orderItemArray.push(transFromOrderItemToArray(orderItem))});
+
          return(
              <View style={styles.tableInfoCard}>
-                 <TableView title={strings.cartInfo} headerList={constants.cartHeaderList} dataList={order_cart} renderAux={this._renderCartAux}/>
+                 <TableView title={strings.cartInfo} headerList={constants.cartHeaderList} dataList={orderItemArray} renderAux={()=>this._renderCartAux(totalFee)}/>
              </View>
          );
      }
 
-     _renderCartAux(){
+     _renderCartAux(totalFee){
       return(
           <View style={styles.auxContainerStyle}>
-              <Text style={styles.auxTextStyle}>Total: 3420.00</Text>
+              <Text style={styles.auxTextStyle}>Total: {toDecimal2(totalFee)}</Text>
           </View>
       );
      }
 
-    _renderDiscountInfo(){
+    _renderDiscountInfo(discountItemList, discountFee, totalFeeFinal){
+        var discountItemArray = [];
+        if(discountItemList && discountItemList.length>0)
+            discountItemList.map((discountItem,i)=>{discountItemArray.push(transFromDiscountItemToArray(discountItem))});
+
         return(
             <View style={styles.tableInfoCard}>
-                <TableView title={strings.discountInfo} headerList={constants.discountHeaderList} dataList={order_discount} renderAux={this._renderDiscountAux}/>
+                <TableView title={strings.discountInfo} headerList={constants.discountHeaderList} dataList={discountItemArray} renderAux={()=>this._renderDiscountAux(discountFee, totalFeeFinal)}/>
             </View>
         );
     }
 
-    _renderDiscountAux(){
+    _renderDiscountAux(discountFee, totalFeeFianl){
         return(
             <View style={styles.auxContainerStyle}>
-                <Text style={styles.auxTextStyle}>折扣减免总计: -121.00</Text>
-                <Text style={styles.auxTextStyle}>实际付款总计: 3299.00</Text>
+                <Text style={styles.auxTextStyle}>{strings.discountFee}: {toDecimal2(discountFee)}</Text>
+                <Text style={[styles.auxTextStyle,{marginTop:10}]}>{strings.totalFeeFianl}: {toDecimal2(totalFeeFianl)}</Text>
             </View>
         )
     }
@@ -120,23 +177,59 @@ export class OrderCommit extends Component {
       )
     };
 
-    _onDeliverAddressSelect = (idx, value) => {};
+  _renderModal(){
+      const deliveryAddType  = this.state.deliveryAddType;
+      var placeholder = "";
 
-    _onPickMobileSelect = (idx, value) => {};
+      switch (deliveryAddType) {
+          case constants.NAME_TYPE:placeholder = strings.receiverName_input;break;
+          case constants.PHONE_TYPE:placeholder = strings.receiverPhone_input;break;
+          case constants.ADDR_TYPE:placeholder = strings.receiverAddr_input;break;
+      }
 
-    _onPickNameSelect = (idx, value) => {};
+      return(
+          <Modal style={styles.modalbox} position={"center"} ref={"modal"}>
+              <InputWithClearButton
+                  hookCanBeCleared
+                  textInputEvent={{
+                      placeholder: placeholder,
+                      onChangeText: (value) => {
+                          switch (deliveryAddType) {
+                              case constants.NAME_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverName: value}),deliveryTextInput:value});break;
+                              case constants.PHONE_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverPhone: value}),deliveryTextInput:value});break;
+                              case constants.ADDR_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverAddr: value}),deliveryTextInput:value});break;
+                          }
+                      }}}
+              />
+              <Button title={strings.add} buttonStyle={styles.addBtn} onPress={()=>{this.props.dispatch(authActions.addReceiverInfo(deliveryAddType, this.state.deliveryTextInput));this.refs.modal.close()}}/>
+          </Modal>
+      );
+  }
 
-    _onDeliverAddressPress = () => {};
+    _onReceiverAddrSelect = (idx, value) => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverAddr: value})});
 
-    _onPickMobilePress = () => {};
+    _onReceiverPhoneSelect = (idx, value) => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverPhone: value})});
 
-    _onPickNamePress = () => {};
+    _onReceiverNameSelect = (idx, value) => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverName: value})});
+
+    _onReceiverAddrPress = () => {this.setState({deliveryAddType:constants.ADDR_TYPE});this.refs.modal.open()};
+
+    _onReceiverPhonePress = () => {this.setState({deliveryAddType:constants.PHONE_TYPE});this.refs.modal.open()};
+
+    _onReceiverNamePress = () => {this.setState({deliveryAddType:constants.NAME_TYPE});this.refs.modal.open()};
 
     _onCommitPress = () => {};
 
     _onHistoryIconPress =() =>{this.props.navigation.push("OrderHistory");};
 
     _onRuleIconPress =()=>{this.props.navigation.push("OrderRule");};
+
+    _getDeliverInfo(){
+        var {customerInfo} = this.props;
+        receiverNameList = customerInfo.receiverNames?customerInfo.receiverNames.split(','):[];
+        receiverPhoneList = customerInfo.receiverPhones?customerInfo.receiverPhones.split(','):[];
+        receiverAddrList = customerInfo.receiverAddrs?customerInfo.receiverAddrs.split(','):[];
+    }
 };
 
 const styles = StyleSheet.create({
@@ -191,13 +284,26 @@ const styles = StyleSheet.create({
     commitBtn: {
         width:200,
         backgroundColor:colors.primaryColor
+    },
+    addBtn: {
+        width:200,
+        marginTop:50,
+        backgroundColor:colors.primaryColor
+    },
+    modalbox:{
+        justifyContent:'center',
+        alignItems:'center',
+        height:300,
+        width:SCREEN_WIDTH,
     }
 });
 
 const mapStateToProps = (state) => ({
     auth: state.get('auth'),
     root: state.get('root'),
-    data: state.get('data'),
+    union: state.get('union'),
+    order: state.get('order'),
+    customerInfo: state.get("auth").get("customerInfo"),
 });
 
 export default connect(mapStateToProps)(OrderCommit)

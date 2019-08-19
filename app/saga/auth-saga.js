@@ -5,6 +5,7 @@
 import {call, put, take, takeEvery} from "redux-saga/effects";
 import * as actions from "../actions/action-types";
 import * as Api from "../api/AuthApi";
+import * as unionActions from "../actions/union-actions";
 import * as authActions from "../actions/auth-actions";
 import * as rootActions from "../actions/root-actions";
 import strings from '../resources/strings';
@@ -22,8 +23,12 @@ function* login( action ) {
       const sessionId = loginResponse.sessionId;
       const customerResponse = yield call(Api.getSupnuevoCustomerInfo, sessionId);
       if(customerResponse.re === 1) {
-        const customerInfo = customerResponse.data;
+        const data = customerResponse.data;
+        const customerInfo = data.customerInfo;
+        const merchant = data.merchant;
+        const union = data.union;
         yield put(authActions.setLoginSuccess(sessionId, username, password, customerInfo));
+        yield put(unionActions.setDefaultUnionAndMerchant(union,merchant));
       }
       else
         yield put(authActions.setLoginError(strings.customer_invalid));
@@ -61,6 +66,21 @@ function* setCustomerDefaultMerchant( action ) {
   } catch (error) {}
 }
 
+function* addCustomerReceiverInfo( action ) {
+  const {addType, addValue} = action;
+  try {
+    const response = yield call(Api.addCustomerReceiverInfo, addType, addValue);
+    if (response.re === 1) {
+      const customerInfo = response.data;
+      yield put(authActions.addReceiverInfoSuccess(customerInfo));
+    } else {
+      yield put(authActions.addReceiverInfoFail(strings.addCustomerReceiverInfoFail));
+    }
+  } catch (error) {
+    yield put(authActions.addReceiverInfoFail(error));
+  }
+}
+
 function* logOut() {
   try {
     const response = yield call(Api.logOut);
@@ -79,6 +99,7 @@ export default [
   takeEvery(actions.REGISTER_ACTION,register),
   takeEvery(actions.SET_DEFAULT_MERCHANT,setCustomerDefaultMerchant),
   takeEvery(actions.LOGOUT_ACTION,logOut),
+  takeEvery(actions.ADD_RECEIVER_INFO,addCustomerReceiverInfo),
 ]
 
 

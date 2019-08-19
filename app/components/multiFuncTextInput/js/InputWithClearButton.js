@@ -78,9 +78,12 @@ export default class InputWithClearButton extends PureComponent {
 
     return (
         <View style={[{ ...this.props.containerStyle }, { flexDirection: 'row' }]}>
-          <View style={componentStyles.titleWrapperStyle}>
-            <Text style={componentStyles.titleStyle}>{title}</Text>
-          </View>
+          {title && title !== ''?
+            <View style={componentStyles.titleWrapperStyle}>
+              <Text style={componentStyles.titleStyle}>{title}</Text>
+            </View>:
+              null
+          }
         <View style={[{ ...this.props.textInputwrapperStyle }, { flexDirection: 'row' }]}>
           <TextInput
             style={[{ ...this.props.textInputStyle }, { width: inputWidth, flexGrow: 1, borderWidth: 0 }]}

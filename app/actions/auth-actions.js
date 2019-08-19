@@ -67,6 +67,7 @@ export function setRegisterSuccess(username, password) {
   }
 }
 
+// customer
 export function setCustomerDefaultMerchant(unionId, merchantId) {
   return {
     type: actions.SET_DEFAULT_MERCHANT,
@@ -79,6 +80,28 @@ export function setCustomerCart(cartId) {
   return {
     type: actions.SET_CUSTOMER_CART,
     cartId: cartId,
+  }
+}
+
+export function addReceiverInfo(addType, addValue) {
+  return {
+    type: actions.ADD_RECEIVER_INFO,
+    addType: addType,
+    addValue: addValue,
+  }
+}
+
+export function addReceiverInfoSuccess(customerInfo) {
+  return {
+    type: actions.ADD_RECEIVER_INFO_SUCCESS,
+    customerInfo: customerInfo,
+  }
+}
+
+export function addReceiverInfoFail(error) {
+  return {
+    type: actions.ADD_RECEIVER_INFO_FAIL,
+    error: error,
   }
 }
 
@@ -100,6 +123,12 @@ export function setLogoutError(error) {
   return {
     type: actions.LOGOUT_ERROR,
     error: error
+  }
+}
+
+export function resetAuthResponse(){
+  return {
+    type: actions.RESET_AUTH_RESPONSE,
   }
 }
 

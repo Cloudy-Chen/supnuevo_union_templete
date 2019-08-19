@@ -44,9 +44,12 @@ const initialState = new Immutable.Map({
     password: '',
     sessionId: '',
     personInfo: null,
+    customerInfo: null,
     unionId: '',
     merchantId: '',
     cartId: '',
+    dataError: '',
+    dataResponse: constants.INITIAL,
   }),
   union: Immutable.Map({
     union: null,
@@ -62,9 +65,19 @@ const initialState = new Immutable.Map({
     dataResponse: constants.INITIAL,
   }),
   shopping: Immutable.Map({
+    dataError: '',
+    dataResponse: constants.INITIAL,
     cartInfo:[]
   }),
   order: Immutable.Map({
+    dataError: '',
+    dataResponse: constants.INITIAL,
+    orderItemList:[],
+    discountItemList:[],
+    totalFee: 0,
+    discountFee: 0,
+    totalFeeFinal: 0,
+    orderList:[]
   }),
 });
 

@@ -17,13 +17,14 @@ export default function shoppingReducer(state, action = {}) {
                 .set('dataResponse', constants.GET_CART_INFO_FAIL)
                 .set('dataError', action.error));
         case actions.UPDATE_CART_INFO_SUCCESS:
+            const newCarInfo = updateCartInfo(state.get('cartInfo'),action.cartInfoItem);
             return state.withMutations(state => state
-                .set('dataResponse', constants.GET_CART_INFO_SUCCESS)
+                .set('dataResponse', constants.UPDATE_CART_INFO_SUCCESS)
                 .set('dataError', '')
-                .set('cartInfo', updateCartInfo(state.get('cartInfo'),action.cartInfoItem)));
+                .set('cartInfo', newCarInfo));
         case actions.UPDATE_CART_INFO_FAIL:
             return state.withMutations(state => state
-                .set('dataResponse', constants.GET_CART_INFO_FAIL)
+                .set('dataResponse', constants.UPDATE_CART_INFO_FAIL)
                 .set('dataError', action.error));
         case actions.SET_CART_INFO:
             return state.withMutations(state => state

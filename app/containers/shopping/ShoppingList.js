@@ -58,21 +58,31 @@ export class ShoppingList extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const Response = this.props.union.get('dataResponse');
-        const nextResponse = nextProps.union.get('dataResponse');
+        const unionResponse = this.props.union.get('dataResponse');
+        const nextUnionResponse = nextProps.union.get('dataResponse');
+
+        const shoppingResponse = this.props.shopping.get('dataResponse');
+        const nextShoppingResponse = nextProps.shopping.get('dataResponse');
 
         // 搜索引擎
-        if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_SUCCESS) {
+        if (unionResponse === constants.INITIAL && nextUnionResponse === constants.GET_PRICE_LIST_LUCENE_SUCCESS) {
             this.props.dispatch(unionActions.resetUnionResponse());
-        }else if (Response === constants.INITIAL && nextResponse === constants.GET_PRICE_LIST_LUCENE_FAIL){
+        }else if (unionResponse === constants.INITIAL && nextUnionResponse === constants.GET_PRICE_LIST_LUCENE_FAIL){
             showCenterToast(strings.getUnionPriceListLuceneFail);
             this.props.dispatch(unionActions.resetUnionResponse());
         }
-        // 购物车
-        if (Response === constants.INITIAL && nextResponse === constants.GET_CART_INFO_SUCCESS) {
+        // 获取购物车信息
+        if (shoppingResponse === constants.INITIAL && nextShoppingResponse === constants.GET_CART_INFO_SUCCESS) {
             this.props.dispatch(shoppingActions.resetShoppingResponse());
-        }else if (Response === constants.INITIAL && nextResponse === constants.GET_CART_INFO_FAIL){
+        }else if (shoppingResponse === constants.INITIAL && nextShoppingResponse === constants.GET_CART_INFO_FAIL){
             showCenterToast(strings.getCartInfoFail);
+            this.props.dispatch(shoppingActions.resetShoppingResponse());
+        }
+        // 更改购物车信息
+        if (shoppingResponse === constants.INITIAL && nextShoppingResponse === constants.UPDATE_CART_INFO_SUCCESS) {
+            this.props.dispatch(shoppingActions.resetShoppingResponse());
+        }else if (shoppingResponse === constants.INITIAL && nextShoppingResponse === constants.UPDATE_CART_INFO_FAIL){
+            showCenterToast(strings.updateCartInfoFail);
             this.props.dispatch(shoppingActions.resetShoppingResponse());
         }
     }
@@ -94,15 +104,15 @@ export class ShoppingList extends Component {
 
     render() {
         const loading = this.props.root.get('loading');
-        const cartNumber = this.props.cartInfo.length;
+        const {cartInfo} = this.props;
 
         return (
             <View style={styles.container}>
                 <TopToolBar title = "购物" navigation = {this.props.navigation}
                             _onLeftIconPress={this._onVolumeIconPress}
                             _onRightIconPress={this._onHelpIconPress}/>
-                <IntroDivider intro={"您的购物车共有"+cartNumber+"件商品"} />
-                {this._renderShoppingCart()}
+                <IntroDivider intro={"您的购物车共有"+cartInfo.length+"件商品"} />
+                {this._renderShoppingCart(cartInfo)}
                 {this._renderSearchBar()}
                 {this._renderPriceList()}
                 <BottomToolBar navigation = {this.props.navigation}/>
@@ -111,11 +121,12 @@ export class ShoppingList extends Component {
         );
     }
 
-    _renderShoppingCart(){
+    _renderShoppingCart(cartInfo){
+
         return(
             <ShoppingCart
-                cartInfo={this.props.cartInfo}
-                _onUpdateCartCommodity={this._onUpdateCartCommodity}
+                cartInfo={cartInfo}
+                _onUpdateCartCommodity={(type, item, i)=>this._onUpdateCartCommodity(type, item, i)}
             />
         );
     }
@@ -189,16 +200,7 @@ export class ShoppingList extends Component {
 
     _onMicrophonePress = ()=>{};
 
-    _onUpdateCartCommodity = (type, item, i) =>{
-        // var new_item = item;
-        // switch (type) {
-        //     case constants.CART_UP:new_item = Object.assign(item,{amount: amount+1});break;
-        //     case constants.CART_DOWN:new_item = Object.assign(item,{amount: amount-1});break;
-        // }
-        // var cartInfo = replaceMember(this.props.cartInfo,new_item,i);
-        // this.dispatch(shoppingActions.setCartInfo(cartInfo));
-        // this.dispatch(shoppingActions.updateCartInfo(item.itemId,item.commodityId,item.amount,this.props.unionId))
-    };
+    _onUpdateCartCommodity = (type, item, i) => this.props.dispatch(shoppingActions.updateCartInfo(this._transFromPriceToCartInfo(item, type), this.props.unionId));
 
     _searchTextChange = (text) => {
         this.setState({searchText: text});

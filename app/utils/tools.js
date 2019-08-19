@@ -195,7 +195,14 @@ export function updateCartInfo(cartInfo, cartInfoItem){
       idx = i;
     }
   });
-  updateCartInfo = (idx === -1)?[...cartInfo,cartInfoItem]:cartInfo.splice(idx,1,cartInfoItem);
+  if(idx === -1)updateCartInfo = [...cartInfo,cartInfoItem];
+  else if(cartInfoItem.amount > 0){
+    cartInfo.splice(idx,1,cartInfoItem);
+    updateCartInfo = cartInfo;
+  }else{
+    cartInfo.splice(idx,1);
+    updateCartInfo = cartInfo;
+  }
   return updateCartInfo;
 }
 
@@ -217,4 +224,39 @@ export function showCenterToast(message){
 
 export function showBottomToast(message){
   Toast.show(message, {duration: Toast.durations.SHORT,position: Toast.positions.BOTTOM,});
+}
+
+export function transFromOrderItemToArray(orderItem) {
+  var array = [];
+  array.push(orderItem.nombre);
+  array.push(orderItem.amount);
+  array.push(toDecimal2(orderItem.price));
+  array.push(toDecimal2(orderItem.total));
+  return array;
+}
+
+export function transFromDiscountItemToArray(discountItem) {
+  var array = [];
+  array.push(discountItem.nombre);
+  array.push(discountItem.amount);
+  array.push(toDecimal2(discountItem.discount));
+  return array;
+}
+
+export function toDecimal2(x) {
+  var f = parseFloat(x);
+  if (isNaN(f)) {
+    return false;
+  }
+  var f = Math.round(x*100)/100;
+  var s = f.toString();
+  var rs = s.indexOf('.');
+  if (rs < 0) {
+    rs = s.length;
+    s += '.';
+  }
+  while (s.length <= rs + 2) {
+    s += '0';
+  }
+  return s;
 }

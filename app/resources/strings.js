@@ -26,6 +26,7 @@ module.exports = new LocalizedStrings({
     register_fail: "注册失败",
     login_wait: "登录中,请稍候...",
     customer_invalid: "该客户不存在",
+    addCustomerReceiverInfoFail:"添加配送信息失败",
 
     // form
     edit_btn: "修改",
@@ -72,11 +73,11 @@ module.exports = new LocalizedStrings({
     customerMobilePhone:"客户手机电话",
     deliverMobilePhone:"提货超市电话",
     deliverAddress:"提货超市地址",
-    type_pick:"自提",
-    type_deliver:"送货",
-    deliverAddress_input:"请输入送货地址",
-    pickMobile_input:"请输入接货人电话",
-    pickName_input:"请输入接货人姓名",
+    self_delivery:"自提",
+    common_delivery:"送货",
+    receiverAddr_input:"请输入送货地址",
+    receiverPhone_input:"请输入接货人电话",
+    receiverName_input:"请输入接货人姓名",
     cartInfo: "购物车中的商品",
     discountInfo: "折扣信息",
     orderHistoryInput:"订单日期",
@@ -94,5 +95,12 @@ module.exports = new LocalizedStrings({
     //shopping
     getCartInfoFail: "获取购物车信息失败",
     updateCartInfoFail: "修改购物车信息失败",
+
+    // order
+    getPrevOrderFail: "获取当前订单失败",
+    getOrderListFail: "获取订单列表失败",
+    submitOrderFail: "提交订单失败",
+    discountFee: "折扣减免总计",
+    totalFeeFianl: "实际付款总计",
   },
 });

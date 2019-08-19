@@ -26,6 +26,7 @@ export default class ShoppingCart extends React.PureComponent {
         <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={true}
+            contentContainerStyle = {styles.centerContainer}
         >
           {this._renderCartItems(cartInfo)}
         </ScrollView>
@@ -40,8 +41,8 @@ export default class ShoppingCart extends React.PureComponent {
       cartItemList.push
       (
           <SwipeableView swipeableStyle={styles.picStyle}
-                         onDownSwipe={this.props._onUpdateCartCommodity(constants.CART_DOWN, item, i)}
-                         onUpSwipe={this.props._onUpdateCartCommodity(constants.CART_UP, item, i)}>
+                         onDownSwipe={()=>this.props._onUpdateCartCommodity(constants.CART_DECLINE, item, i)}
+                         onUpSwipe={()=>this.props._onUpdateCartCommodity(constants.CART_ADD, item, i)}>
             <Badge value={item.amount} status="error" containerStyle={{ position: 'absolute', top: -5, right: -5 }}/>
             <Image resizeMode="contain" style={{width: 100, height: 80,}} source={image}/>
           </SwipeableView>
@@ -72,13 +73,18 @@ var styles = StyleSheet.create({
     fontSize:18
   },
   picStyle: {
-    width: 120,
-    height: 120,
-    margin:5,
+    width: 100,
+    height: 80,
+    margin:10,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 0.8,
     borderColor: colors.primaryGrayLight,
   },
+  centerContainer:{
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 })
 

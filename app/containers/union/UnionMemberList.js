@@ -118,6 +118,7 @@ export class UnionMemberList extends Component {
       const merchantId = member.merchantId;
       this.setState({selectedMerchantId:merchantId});
       this.props.dispatch(authActions.setCustomerDefaultMerchant(unionId, merchantId));
+      this.props.dispatch(unionActions.setDefaultUnionAndMerchant(null,member));
   };
 
 };

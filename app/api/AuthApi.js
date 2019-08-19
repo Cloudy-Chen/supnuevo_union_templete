@@ -62,6 +62,17 @@ export function loginAfterOtherServerAuthed (auth) {
   return post(url ,body);
 }
 
+// 增加订单配送信息
+export function addCustomerReceiverInfo (addType, addValue) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/addCustomerReceiverInfo';
+  const body = {
+    addType: addType,
+    addValue: addValue,
+  };
+
+  return post(url ,body);
+}
+
 // 登出
 export function logOut () {
   const url = constants.SUPNUEVO_BASE_URL + '/func/auth/webLogout';

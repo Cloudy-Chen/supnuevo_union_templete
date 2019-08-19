@@ -103,9 +103,10 @@ export default function unionReducer(state, action = {}) {
       return state.withMutations(state => state
           .set('dataResponse', constants.INITIAL)
           .set('dataError', ''));
-    case actions.SET_UNION:
+    case actions.SET_DEFAULT_UNION_AND_MERCHANT:
       return state.withMutations(state => state
-          .set('union', action.union));
+          .set('union', action.union?action.union:state.get("union"))
+          .set('merchant', action.merchant?action.merchant:state.get("merchant")));
     default:
       return state
   }
