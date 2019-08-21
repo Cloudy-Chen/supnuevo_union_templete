@@ -3,6 +3,9 @@ package com.supnuevo_union_templete;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -26,9 +29,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new VectorIconsPackage(),
             new PickerPackage(),
-            new RNGestureHandlerPackage()
+            new RNGestureHandlerPackage(),
+            new VectorIconsPackage()
       );
     }
 
