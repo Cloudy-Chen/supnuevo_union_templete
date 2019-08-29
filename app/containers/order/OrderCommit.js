@@ -35,14 +35,14 @@ let receiverAddrList = [];
 
 export class OrderCommit extends Component {
 
-  constructor(props) {
-    super(props);
-      this.state = {
-          deliveryInfo: {receiverName:'',receiverPhone:'',receiverAddr:'',deliveryType:constants.SELF_DELIVERY},
-          deliveryAddType: constants.ADDR_TYPE,
-          deliveryTextInput: "",
-      };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            deliveryInfo: {receiverName:'',receiverPhone:'',receiverAddr:'',deliveryType:constants.SELF_DELIVERY},
+            deliveryAddType: constants.ADDR_TYPE,
+            deliveryTextInput: "",
+        };
+    }
 
     componentDidMount() {
         this.props.dispatch(orderActions.getOrderPrevInfo());
@@ -51,6 +51,9 @@ export class OrderCommit extends Component {
     componentWillReceiveProps(nextProps) {
         const orderResponse = this.props.order.get('dataResponse');
         const nextOrderResponse = nextProps.order.get('dataResponse');
+
+        const authResponse = this.props.auth.get("dataResponse");
+        const nextAuthResponse = nextProps.auth.get("dataResponse");
 
         // 获取当前订单
         if (orderResponse === constants.INITIAL && nextOrderResponse === constants.GET_PREV_ORDER_SUCCESS) {
@@ -61,92 +64,101 @@ export class OrderCommit extends Component {
         }
         // 提交订单
         if (orderResponse === constants.INITIAL && nextOrderResponse === constants.SUBMIT_ORDER_INFO_SUCCESS) {
+            showCenterToast(strings.submitOrderSuccess);
             this.props.dispatch(orderActions.resetOrderResponse());
         }else if (orderResponse === constants.INITIAL && nextOrderResponse === constants.SUBMIT_ORDER_INFO_FAIL){
             showCenterToast(strings.submitOrderFail);
             this.props.dispatch(orderActions.resetOrderResponse());
         }
+        // 添加配送信息
+        if (authResponse === constants.INITIAL && nextAuthResponse === constants.ADD_RECEIVER_INFO_SUCCESS) {
+            this.props.dispatch(authActions.resetAuthResponse());
+            this.refs.modal.close();
+        }else if (authResponse === constants.INITIAL && nextAuthResponse === constants.ADD_RECEIVER_INFO_FAIL){
+            showCenterToast(strings.addCustomerReceiverInfoFail);
+            this.props.dispatch(authActions.resetAuthResponse());
+        }
     }
 
-  render() {
-      const orderItemList = this.props.order.get("orderItemList");
-      const discountItemList = this.props.order.get("discountItemList");
-      const totalFee = this.props.order.get("totalFee");
-      const discountFee = this.props.order.get("discountFee");
-      const totalFeeFinal = this.props.order.get("totalFeeFinal");
+    render() {
+        const orderItemList = this.props.order.get("orderItemList");
+        const discountItemList = this.props.order.get("discountItemList");
+        const totalFee = this.props.order.get("totalFee");
+        const discountFee = this.props.order.get("discountFee");
+        const totalFeeFinal = this.props.order.get("totalFeeFinal");
 
-      this._getDeliverInfo();
+        this._getDeliverInfo();
 
-    return (
-        <View style={styles.container}>
-            <TopToolBar title = "订单" navigation = {this.props.navigation}
-                        _onLeftIconPress={this._onVolumeIconPress}
-                        _onRightIconPress={this._onHelpIconPress}/>
-            <ScrollView style={styles.scrollView}>
-            <View style={styles.scrollViewContanier}>
-            {this._renderBasicInfo()}
-            {this._renderDeliverInfo()}
-            {this._renderCartInfo(orderItemList, totalFee)}
-            {this._renderDiscountInfo(discountItemList, discountFee, totalFeeFinal)}
-            {this._renderCommitButton()}
+        return (
+            <View style={styles.container}>
+                <TopToolBar title = "订单" navigation = {this.props.navigation}
+                            _onLeftIconPress={this._onVolumeIconPress}
+                            _onRightIconPress={this._onHelpIconPress}/>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.scrollViewContanier}>
+                        {this._renderBasicInfo()}
+                        {this._renderDeliverInfo()}
+                        {this._renderCartInfo(orderItemList, totalFee)}
+                        {this._renderDiscountInfo(discountItemList, discountFee, totalFeeFinal)}
+                        {this._renderCommitButton()}
+                    </View>
+                </ScrollView>
+                {this._renderModal()}
+                <BottomToolBar navigation = {this.props.navigation}
+                               leftAction={ACTION_HISTORY}
+                               _onLeftIconPress={this._onHistoryIconPress}
+                               rightAction={ACTION_RULE}
+                               _onRightIconPress={this._onRuleIconPress}
+                />
             </View>
-            </ScrollView>
-            {this._renderModal()}
-            <BottomToolBar navigation = {this.props.navigation}
-                           leftAction={ACTION_HISTORY}
-                           _onLeftIconPress={this._onHistoryIconPress}
-                           rightAction={ACTION_RULE}
-                           _onRightIconPress={this._onRuleIconPress}
-            />
-        </View>
         );
-  }
+    }
 
-  _renderBasicInfo(){
-      const customerInfo = this.props.auth.get("customerInfo");
-      const merchant = this.props.union.get("merchant");
+    _renderBasicInfo(){
+        const customerInfo = this.props.auth.get("customerInfo");
+        const merchant = this.props.union.get("merchant");
 
-      return(
-          <View style={styles.basicInfoContainer}>
-              <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {customerInfo.receiverNames}/>
-              <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {merchant.cuit}/>
-              <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {merchant.direccion}/>
-          </View>
-      );
-  }
+        return(
+            <View style={styles.basicInfoContainer}>
+                <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {customerInfo.receiverPhones}/>
+                <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {merchant?merchant.cuit:''}/>
+                <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {merchant?merchant.direccion:''}/>
+            </View>
+        );
+    }
 
-  _renderDeliverInfo(){
-      var {deliveryType} = this.state.deliveryInfo;
-      return(
-        <View style={styles.deliverInfoCard}>
-            <CheckBox title={strings.self_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.SELF_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.SELF_DELIVERY})})}/>
-            <CheckBox title={strings.common_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.COMMON_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.COMMON_DELIVERY})})}/>
-            <OrderDropdownCell defaultValue={strings.receiverAddr_input} dataList={receiverAddrList} onDropDownSelect={this._onReceiverAddrSelect} onButtonPress={this._onReceiverAddrPress}/>
-            <OrderDropdownCell defaultValue={strings.receiverPhone_input} dataList={receiverPhoneList} onDropDownSelect={this._onReceiverPhoneSelect} onButtonPress={this._onReceiverPhonePress}/>
-            <OrderDropdownCell defaultValue={strings.receiverName_input} dataList={receiverNameList} onDropDownSelect={this._onReceiverNameSelect} onButtonPress={this._onReceiverNamePress}/>
-        </View>
-      );
-  }
+    _renderDeliverInfo(){
+        var {deliveryType} = this.state.deliveryInfo;
+        return(
+            <View style={styles.deliverInfoCard}>
+                <CheckBox title={strings.self_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.SELF_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.SELF_DELIVERY})})}/>
+                <CheckBox title={strings.common_delivery} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' checked={deliveryType === constants.COMMON_DELIVERY} onPress={() => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{deliveryType: constants.COMMON_DELIVERY})})}/>
+                <OrderDropdownCell defaultValue={strings.receiverAddr_input} dataList={receiverAddrList} onDropDownSelect={this._onReceiverAddrSelect} onButtonPress={this._onReceiverAddrPress}/>
+                <OrderDropdownCell defaultValue={strings.receiverPhone_input} dataList={receiverPhoneList} onDropDownSelect={this._onReceiverPhoneSelect} onButtonPress={this._onReceiverPhonePress}/>
+                <OrderDropdownCell defaultValue={strings.receiverName_input} dataList={receiverNameList} onDropDownSelect={this._onReceiverNameSelect} onButtonPress={this._onReceiverNamePress}/>
+            </View>
+        );
+    }
 
-     _renderCartInfo(orderItemList, totalFee){
-      var orderItemArray = [];
-      if(orderItemList && orderItemList.length>0)
-      orderItemList.map((orderItem,i)=>{orderItemArray.push(transFromOrderItemToArray(orderItem))});
+    _renderCartInfo(orderItemList, totalFee){
+        var orderItemArray = [];
+        if(orderItemList && orderItemList.length>0)
+            orderItemList.map((orderItem,i)=>{orderItemArray.push(transFromOrderItemToArray(orderItem))});
 
-         return(
-             <View style={styles.tableInfoCard}>
-                 <TableView title={strings.cartInfo} headerList={constants.cartHeaderList} dataList={orderItemArray} renderAux={()=>this._renderCartAux(totalFee)}/>
-             </View>
-         );
-     }
+        return(
+            <View style={styles.tableInfoCard}>
+                <TableView title={strings.cartInfo} headerList={constants.cartHeaderList} dataList={orderItemArray} renderAux={()=>this._renderCartAux(totalFee)}/>
+            </View>
+        );
+    }
 
-     _renderCartAux(totalFee){
-      return(
-          <View style={styles.auxContainerStyle}>
-              <Text style={styles.auxTextStyle}>Total: {toDecimal2(totalFee)}</Text>
-          </View>
-      );
-     }
+    _renderCartAux(totalFee){
+        return(
+            <View style={styles.auxContainerStyle}>
+                <Text style={styles.auxTextStyle}>Total: {toDecimal2(totalFee)}</Text>
+            </View>
+        );
+    }
 
     _renderDiscountInfo(discountItemList, discountFee, totalFeeFinal){
         var discountItemArray = [];
@@ -170,41 +182,41 @@ export class OrderCommit extends Component {
     }
 
     _renderCommitButton(){
-      return(
-          <View style={styles.commitBtnWrapper}>
-              <Button title={strings.commit} buttonStyle={styles.commitBtn} onPress={this._onCommitPress}/>
-          </View>
-      )
+        return(
+            <View style={styles.commitBtnWrapper}>
+                <Button title={strings.commit} buttonStyle={styles.commitBtn} onPress={this._onCommitPress}/>
+            </View>
+        )
     };
 
-  _renderModal(){
-      const deliveryAddType  = this.state.deliveryAddType;
-      var placeholder = "";
+    _renderModal(){
+        const deliveryAddType  = this.state.deliveryAddType;
+        var placeholder = "";
 
-      switch (deliveryAddType) {
-          case constants.NAME_TYPE:placeholder = strings.receiverName_input;break;
-          case constants.PHONE_TYPE:placeholder = strings.receiverPhone_input;break;
-          case constants.ADDR_TYPE:placeholder = strings.receiverAddr_input;break;
-      }
+        switch (deliveryAddType) {
+            case constants.NAME_TYPE:placeholder = strings.receiverName_input;break;
+            case constants.PHONE_TYPE:placeholder = strings.receiverPhone_input;break;
+            case constants.ADDR_TYPE:placeholder = strings.receiverAddr_input;break;
+        }
 
-      return(
-          <Modal style={styles.modalbox} position={"center"} ref={"modal"}>
-              <InputWithClearButton
-                  hookCanBeCleared
-                  textInputEvent={{
-                      placeholder: placeholder,
-                      onChangeText: (value) => {
-                          switch (deliveryAddType) {
-                              case constants.NAME_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverName: value}),deliveryTextInput:value});break;
-                              case constants.PHONE_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverPhone: value}),deliveryTextInput:value});break;
-                              case constants.ADDR_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverAddr: value}),deliveryTextInput:value});break;
-                          }
-                      }}}
-              />
-              <Button title={strings.add} buttonStyle={styles.addBtn} onPress={()=>{this.props.dispatch(authActions.addReceiverInfo(deliveryAddType, this.state.deliveryTextInput));this.refs.modal.close()}}/>
-          </Modal>
-      );
-  }
+        return(
+            <Modal style={styles.modalbox} position={"center"} ref={"modal"}>
+                <InputWithClearButton
+                    hookCanBeCleared
+                    textInputEvent={{
+                        placeholder: placeholder,
+                        onChangeText: (value) => {
+                            switch (deliveryAddType) {
+                                case constants.NAME_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverName: value}),deliveryTextInput:value});break;
+                                case constants.PHONE_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverPhone: value}),deliveryTextInput:value});break;
+                                case constants.ADDR_TYPE:this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverAddr: value}),deliveryTextInput:value});break;
+                            }
+                        }}}
+                />
+                <Button title={strings.add} buttonStyle={styles.addBtn} onPress={()=>this.props.dispatch(authActions.addReceiverInfo(deliveryAddType, this.state.deliveryTextInput))}/>
+            </Modal>
+        );
+    }
 
     _onReceiverAddrSelect = (idx, value) => this.setState({deliveryInfo:Object.assign(this.state.deliveryInfo,{receiverAddr: value})});
 
@@ -218,7 +230,7 @@ export class OrderCommit extends Component {
 
     _onReceiverNamePress = () => {this.setState({deliveryAddType:constants.NAME_TYPE});this.refs.modal.open()};
 
-    _onCommitPress = () => {};
+    _onCommitPress = () => {this.props.dispatch(orderActions.submitOrder(this.state.deliveryInfo))};
 
     _onHistoryIconPress =() =>{this.props.navigation.push("OrderHistory");};
 
@@ -239,7 +251,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     scrollView:{
-      marginBottom: getHeaderHeight(),
+        marginBottom: getHeaderHeight(),
     },
     scrollViewContanier:{
         alignItems: 'center',

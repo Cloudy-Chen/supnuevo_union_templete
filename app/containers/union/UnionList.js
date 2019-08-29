@@ -23,7 +23,7 @@ import {Avatar, ListItem} from "react-native-elements";
 import colors from "../../resources/colors";
 import constants from "../../resources/constants";
 import strings from "../../resources/strings";
-import {isEmptyObject, SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
+import { SCREEN_WIDTH, showCenterToast} from "../../utils/tools";
 import * as unionActions from "../../actions/union-actions";
 
 let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});

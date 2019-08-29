@@ -100,6 +100,28 @@ export function getUnionPriceListLuceneFail(error ) {
   }
 }
 
+// 规则
+export function getUnionRegulation(unionId) {
+  return {
+    type: actions.GET_UNION_REGULATION,
+    unionId: unionId,
+  };
+}
+
+export function getUnionRegulationSuccess(regulation) {
+  return {
+    type: actions.GET_UNION_REGULATION_SUCCESS,
+    regulation: regulation,
+  };
+}
+
+export function getUnionRegulationFail(error) {
+  return {
+    type: actions.GET_UNION_REGULATION_FAIL,
+    error: error,
+  };
+}
+
 //Common
 export function setUnionResponse(type,data) {
   return{

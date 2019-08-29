@@ -10,7 +10,7 @@ import colors from '../resources/colors';
 import strings from '../resources/strings';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
-import {isEmptyObject, SCREEN_HEIGHT, SCREEN_WIDTH} from "../utils/tools";
+import {SCREEN_HEIGHT, SCREEN_WIDTH} from "../utils/tools";
 
 const CANCEL_INDEX = 0;
 const DESTRUCTIVE_INDEX = 1;
@@ -59,7 +59,7 @@ export default class ImagePickerViewer extends React.PureComponent {
           <Image
               resizeMode="contain"
               style={[styles.pictureItemView, imageHeight? {height:imageHeight}:{}, imageWidth? {width:imageWidth}:{}]}
-              source={isEmptyObject(url)?require('../assets/img/img_logo.png'):{uri:url}}/>
+              source={url == null?require('../assets/img/img_logo.png'):{uri:url}}/>
         </TouchableOpacity>
     );
   }

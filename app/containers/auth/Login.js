@@ -11,7 +11,7 @@ import FloatingTextInput from "../../components/FloatingTextInput";
 import colors from '../../resources/colors';
 import dimens from '../../resources/dimens';
 import strings from '../../resources/strings';
-import {isEmptyObject, isObject, showCenterToast} from '../../utils/tools'
+import {showCenterToast} from '../../utils/tools'
 import {SpinnerWrapper} from '../../components/SpinnerLoading/index'
 
 const backgroundImg = require('../../assets/img/app_background_img.jpg');
@@ -45,7 +45,7 @@ export class Login extends Component {
         const loginError = this.props.auth.get('loginError');
         const isLoggedIn = this.props.auth.get('isLoggedIn');
 
-        if(!this.state.isFetchedStore && !isEmptyObject(username) && !isEmptyObject(password))
+        if(!this.state.isFetchedStore && username != null && password != null)
             this.setState({loginForm:Object.assign(this.state.loginForm,{username: username,password:password}),isFetchedStore:true});
 
         if (loginError && loginError !== '') {
@@ -118,7 +118,7 @@ export class Login extends Component {
     // 对登录按钮的响应
     onLoginPress = () => {
         const {username,password} = this.state.loginForm;
-        if(isEmptyObject(username) || isEmptyObject(password)){
+        if(username == null || username === '' || password == null || password === ''){
             showCenterToast(strings.login_validate_msg);
             return;
         }else{

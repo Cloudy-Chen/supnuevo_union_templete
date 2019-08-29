@@ -78,9 +78,9 @@ export default class InputWithCalendar extends PureComponent {
                     style={componentStyles.dataPickerContainerStyle}
                     customStyles={dataPickerCustomStyles}
                     placeholder={strings.choose}
-                    mode="datetime"
-                    format="YYYY-MM-DD HH:mm"
-                    minDate={"2019-01-01 00:00"}
+                    mode="date"
+                    format="YYYY-MM-DD"
+                    minDate={"2019-01-01"}
                     confirmBtnText={strings.confirm}
                     cancelBtnText={strings.cancel}
                     showIcon={true}

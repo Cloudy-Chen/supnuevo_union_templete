@@ -8,6 +8,7 @@ import {SCREEN_WIDTH} from "../utils/tools";
 export default class IntroDivider extends React.PureComponent {
   static propTypes = {
     intro: PropTypes.string,
+    dividerStyle: PropTypes.object || null,
   };
 
   render() {
@@ -15,7 +16,7 @@ export default class IntroDivider extends React.PureComponent {
     var {intro} = this.props;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container,this.props.dividerStyle]}>
           <Text style={styles.text}>{intro}</Text>
         </View>
     );

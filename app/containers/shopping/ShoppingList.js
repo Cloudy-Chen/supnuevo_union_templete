@@ -105,13 +105,14 @@ export class ShoppingList extends Component {
     render() {
         const loading = this.props.root.get('loading');
         const {cartInfo} = this.props;
+        const cartNumber = cartInfo && cartInfo.length>0?cartInfo.length:0;
 
         return (
             <View style={styles.container}>
                 <TopToolBar title = "购物" navigation = {this.props.navigation}
                             _onLeftIconPress={this._onVolumeIconPress}
                             _onRightIconPress={this._onHelpIconPress}/>
-                <IntroDivider intro={"您的购物车共有"+cartInfo.length+"件商品"} />
+                <IntroDivider intro={"您的购物车共有"+cartNumber+"件商品"} />
                 {this._renderShoppingCart(cartInfo)}
                 {this._renderSearchBar()}
                 {this._renderPriceList()}

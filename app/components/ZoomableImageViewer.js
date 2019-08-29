@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { Animated, Image, Modal, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View, ViewPropTypes, ScrollView } from 'react-native';
 import colors from '../resources/colors'
 import ImageViewer from 'react-native-image-zoom-viewer';
-import {isEmptyObject, SCREEN_HEIGHT, SCREEN_WIDTH} from "../utils/tools"
+import {SCREEN_HEIGHT, SCREEN_WIDTH} from "../utils/tools"
 
 export default class ZoomableImageViewer extends React.PureComponent {
 
@@ -41,7 +41,7 @@ export default class ZoomableImageViewer extends React.PureComponent {
           <Image
               resizeMode="contain"
               style={[styles.pictureItemView, imageHeight? {height:imageHeight}:{}, imageWidth? {width:imageWidth}:{}]}
-              source={isEmptyObject(url)?require('../assets/img/img_logo.png'):{uri:url}}/>
+              source={url == null?require('../assets/img/img_logo.png'):{uri:url}}/>
         </TouchableOpacity>
     );
   }

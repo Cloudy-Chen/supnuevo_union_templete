@@ -99,6 +99,16 @@ export default function unionReducer(state, action = {}) {
           .set('dataResponse', constants.GET_PRICE_LIST_LUCENE_FAIL)
           .set('dataError', action.error));
 
+    case actions.GET_UNION_REGULATION_SUCCESS:
+      return state.withMutations(state => state
+          .set('dataResponse', constants.GET_UNION_REGULATION_SUCCESS)
+          .set('dataError', '')
+          .set('regulation', action.regulation));
+    case actions.GET_UNION_REGULATION_FAIL:
+      return state.withMutations(state => state
+          .set('dataResponse', constants.GET_UNION_REGULATION_FAIL)
+          .set('dataError', action.error));
+
     case actions.RESET_UNION_RESPONSE:
       return state.withMutations(state => state
           .set('dataResponse', constants.INITIAL)

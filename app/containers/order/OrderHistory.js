@@ -21,27 +21,57 @@ import {
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
 import {BottomToolBar, ACTION_BACK} from "../../components/BottomToolBar";
-import {SCREEN_HEIGHT, SCREEN_WIDTH, getHeaderHeight} from "../../utils/tools";
+import {
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+    getHeaderHeight,
+    showCenterToast,
+    transFromOrderItemToArray
+} from "../../utils/tools";
 import {InputWithCalendar} from '../../components/multiFuncTextInput/index';
 import strings from "../../resources/strings";
 import TableView from "../../components/TableView";
 import constants from "../../resources/constants";
-import order_cart from "../../test/order_cart";
 import colors from "../../resources/colors";
-import {CheckBox} from "react-native-elements";
 import {OrderDropdownCell} from "../../components/modalDropdownBar";
 import {InformationItem, TYPE_TEXT} from "../../components/InformationItem";
+import * as orderActions from "../../actions/order-actions";
+import * as authActions from "../../actions/auth-actions";
+import IntroDivider from "../../components/IntroDivider";
 
 export class OrderHistory extends Component {
 
   constructor(props) {
     super(props);
       this.state = {
-          orderHistory:'请输入订单日期'
+          orderDate:'请输入订单日期',
       };
   }
 
+    componentDidMount() {
+        this.props.dispatch(orderActions.getOrderListOfDate(null));
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const orderResponse = this.props.order.get('dataResponse');
+        const nextOrderResponse = nextProps.order.get('dataResponse');
+
+        // 获取历史订单
+        if (orderResponse === constants.INITIAL && nextOrderResponse === constants.GET_ORDER_LIST_SUCCESS) {
+            this.props.dispatch(orderActions.resetOrderResponse());
+        } else if (orderResponse === constants.INITIAL && nextOrderResponse === constants.GET_ORDER_LIST_FAIL) {
+            showCenterToast(strings.getOrderListFail);
+            this.props.dispatch(orderActions.resetOrderResponse());
+        }
+    }
+
   render() {
+      const orderList = this.props.order.get('orderList');
+      const orderListView = [];
+      orderList.map((orderItem,i)=>{
+          orderListView.push(this._renderOrderItem(orderItem));
+      });
+
       return (
           <View style={styles.container}>
               <TopToolBar title = "历史订单" navigation = {this.props.navigation}
@@ -50,38 +80,52 @@ export class OrderHistory extends Component {
               <ScrollView>
               <View style={styles.scrollViewContanier}>
               <InputWithCalendar
-                  title={strings.orderHistoryInput}
-                  date={this.state.orderHistory}
+                  title={strings.orderDate}
+                  date={this.state.orderDate}
                   onDateChange={(value)=>{
-                      this.setState({orderHistory:value});
+                      this.setState({orderDate:value});
+                      this.props.dispatch(orderActions.getOrderListOfDate(value));
                   }}/>
-              {this._renderBasicInfo()}
-              {this._renderOrderHistoryInfo()}
+                  {orderListView}
               </View>
               </ScrollView>
               <BottomToolBar navigation = {this.props.navigation}
               leftAction={ACTION_BACK} _onLeftIconPress={this._onBackIconPress}/>
-          </View>
-      );
+          </View>);
   }
 
-    _renderBasicInfo(){
+  _renderOrderItem(orderItem){
+      const order = orderItem.order;
+      const itemList = order.itemList;
+      let orderView = this._renderBasicInfo(order);
+      let itemView = this._renderOrderItemInfo(itemList);
+      let divider = <IntroDivider dividerStyle={{marginTop: 10}} intro={strings.orderNum+": "+order.orderNum}/>;
+      return ([divider,orderView,itemView]);
+  }
+
+    _renderBasicInfo(order){
         return(
+            order?
             <View style={styles.basicInfoContainer}>
-                <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {"11549878988"}/>
-                <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {"11436677689"}/>
-                <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {"San Lorenzo 2032"}/>
-                <InformationItem key = {3} type = {TYPE_TEXT} title = {strings.pickMobilePhone} content = {"114399892990"}/>
-                <InformationItem key = {4} type = {TYPE_TEXT} title = {strings.pickName} content = {"Fernando laguna"}/>
-            </View>
+                <InformationItem key = {0} type = {TYPE_TEXT} title = {strings.customerMobilePhone} content = {order.receiverPhone}/>
+                <InformationItem key = {1} type = {TYPE_TEXT} title = {strings.deliverMobilePhone} content = {order.nomroDetelePhono}/>
+                <InformationItem key = {2} type = {TYPE_TEXT} title = {strings.deliverAddress} content = {order.direccion}/>
+                <InformationItem key = {3} type = {TYPE_TEXT} title = {strings.pickMobilePhone} content = {order.receiverPhone}/>
+                <InformationItem key = {4} type = {TYPE_TEXT} title = {strings.pickName} content = {order.receiverName}/>
+            </View>:null
         );
   }
 
-    _renderOrderHistoryInfo(){
+    _renderOrderItemInfo(itemList){
+        var itemArray = [];
+        if(itemList && itemList.length>0)
+            itemList.map((item,i)=>{itemArray.push(transFromOrderItemToArray(item))});
+
         return(
+            itemList && itemList.length>0?
             <View style={styles.tableInfoCard}>
-                <TableView title={strings.orderInfo} headerList={constants.cartHeaderList} dataList={order_cart} renderAux={null}/>
-            </View>
+                <TableView title={strings.orderInfo} headerList={constants.cartHeaderList} dataList={itemArray} renderAux={null}/>
+            </View>:null
         );
     }
 
@@ -89,18 +133,21 @@ export class OrderHistory extends Component {
 
   _onHelpIconPress =() =>{};
 
-    _onBackIconPress=() =>this.props.navigation.pop();
+  _onBackIconPress=() =>this.props.navigation.pop();
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: SCREEN_WIDTH,
     },
     basicInfoContainer:{
-        flex:1
+        flex:1,
+        width: SCREEN_WIDTH,
     },
     scrollViewContanier:{
         alignItems: 'center',
+        marginBottom: 100,
     },
     tableInfoCard:{
         width:SCREEN_WIDTH-40,
@@ -115,7 +162,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
     auth: state.get('auth'),
     root: state.get('root'),
-    data: state.get('data'),
+    order: state.get('order'),
 });
 
 export default connect(mapStateToProps)(OrderHistory)

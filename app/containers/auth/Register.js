@@ -19,7 +19,7 @@ import FloatingTextInput from "../../components/FloatingTextInput";
 import colors from '../../resources/colors';
 import dimens from '../../resources/dimens';
 import strings from '../../resources/strings';
-import {isEmptyObject, isObject, showCenterToast} from '../../utils/tools'
+import {showCenterToast} from '../../utils/tools'
 import {SpinnerWrapper} from "../../components/SpinnerLoading";
 import * as rootActions from "../../actions/root-actions";
 

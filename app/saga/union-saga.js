@@ -139,10 +139,27 @@ function* getUnionPriceListLucene (action) {
   }
 }
 
+// 获取联盟规则
+function* getUnionRegulation (action) {
+  const {unionId} = action;
+  try {
+    const response = yield call(Api.getSupnuevoBuyerUnionRegulationInfo, unionId );
+    if (response.re == 1) {
+      const regulation = response.data;
+      yield put(unionActions.getUnionRegulationSuccess(regulation));
+    } else {
+      yield put(unionActions.getUnionRegulationFail(strings.getUnionRegulationFail));
+    }
+  } catch (error) {
+    yield put(unionActions.getUnionRegulationFail(error));
+  }
+}
+
 export default [
   takeEvery(actions.GET_UNION_LIST_ACTION, getUnionList),
   takeEvery(actions.GET_UNION_MEMBER_LIST_ACTION, getUnionMemberList),
   takeEvery(actions.GET_ADVERTISEMENT_LIST, getUnionAdvertisementList),
   takeEvery(actions.GET_PRICE_LIST, getUnionPriceList),
-  takeEvery(actions.GET_PRICE_LIST_LUCENE, getUnionPriceListLucene)
+  takeEvery(actions.GET_PRICE_LIST_LUCENE, getUnionPriceListLucene),
+  takeEvery(actions.GET_UNION_REGULATION, getUnionRegulation),
 ]

@@ -13,7 +13,7 @@ export function submitSupnuevoCustomerOrder(deliveryInfo) {
     receiverAddr:deliveryInfo.receiverAddr,
     receiverName:deliveryInfo.receiverName,
     receiverPhone:deliveryInfo.receiverPhone,
-    submitMode:1,
+    submitMode:"1",
   };
 
   return post(url ,body);
@@ -28,9 +28,11 @@ export function getSupnuevoCustomerOrderPrevInfo() {
 }
 
 // 获取所有历史订单
-export function getSupnuevoCustomerOrderListOfDate() {
+export function getSupnuevoCustomerOrderListOfDate(orderDate) {
   const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/customer/getSupnuevoCustomerOrderListOfDate';
-  const body = {};
+  const body = {
+    orderDate: orderDate
+  };
 
   return post(url ,body);
 }

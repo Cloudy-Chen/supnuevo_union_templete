@@ -61,6 +61,7 @@ const initialState = new Immutable.Map({
     edges: [],
     advertisements: [],
     refreshState: RefreshState.Idle,
+    regulation: '',
     dataError: '',
     dataResponse: constants.INITIAL,
   }),

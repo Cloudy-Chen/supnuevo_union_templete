@@ -31,8 +31,9 @@ function* getSupnuevoCustomerOrderPrevInfo (action) {
 
 // 获取订单列表
 function* getSupnuevoCustomerOrderListOfDate (action) {
+  const {orderDate} = action
   try {
-    const response = yield call(Api.getSupnuevoCustomerOrderListOfDate);
+    const response = yield call(Api.getSupnuevoCustomerOrderListOfDate, orderDate);
     if (response.re === 1) {
       const orderList = response.data;
       yield put(orderActions.getOrderListSuccess(orderList));

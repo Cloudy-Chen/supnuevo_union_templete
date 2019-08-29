@@ -13,13 +13,13 @@ export function submitOrder (deliveryInfo) {
 
 export function submitOrderSuccess() {
   return {
-    type: actions.GET_CART_INFO_SUCCESS,
+    type: actions.SUBMIT_ORDER_INFO_SUCCESS,
   };
 }
 
 export function submitOrderFail(error) {
   return {
-    type: actions.GET_CART_INFO_FAIL,
+    type: actions.SUBMIT_ORDER_INFO_FAIL,
     error: error,
   };
 }
@@ -48,9 +48,10 @@ export function getOrderPrevInfoFail(error) {
   };
 }
 
-export function getOrderListOfDate () {
+export function getOrderListOfDate (orderDate) {
   return {
     type: actions.GET_ORDER_LSIT,
+    orderDate: orderDate,
   };
 }
 

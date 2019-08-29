@@ -93,10 +93,11 @@ export class UnionDiscount extends Component {
 
         const advertisements = this.props.union.get('advertisements');
         const advertisement = advertisements[index];
+        const image = advertisement.image?{uri:advertisement.image}:require('../../assets/img/img_logo.png');
 
         return (
             <View style={{height:100,width:SCREEN_WIDTH,justifyContent: 'center',alignItems: "center",flexDirection: 'column'}}>
-            <Text>{advertisement.advertisementId}</Text>
+                <Image resizeMode="contain" style={styles.image} source={image}/>
             </View>
         );
     };
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     },
     image:{
         width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT - getHeaderHeight()*2,
+        height: 100,
     },
     separator: {
         height: 0.5,

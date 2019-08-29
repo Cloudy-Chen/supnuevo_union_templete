@@ -59,3 +59,13 @@ export function getSupnuevoBuyerUnionPriceListLucene(unionId, userInput, start, 
 
   return post(url ,body);
 }
+
+// 获取联盟规则
+export function getSupnuevoBuyerUnionRegulationInfo (unionId) {
+  const url = constants.SUPNUEVO_TEST_BASE_URL + '/func/union/getSupnuevoBuyerUnionRegulationInfo';
+  const body = {
+    unionId:unionId
+  };
+
+  return post(url ,body);
+}

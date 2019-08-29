@@ -11,7 +11,6 @@ import {InformationItem, TYPE_TEXT} from "../../InformationItem";
 import strings from "../../../resources/strings";
 import IntroDivider from '../../../components/IntroDivider';
 import {Image} from "react-native-elements";
-import {isEmptyObject} from "../../../utils/tools";
 
 export default class AIDataDisplay extends Component {
     constructor(props) {
@@ -23,7 +22,7 @@ export default class AIDataDisplay extends Component {
     render() {
         const data = this.props.data;
 
-        return (!isEmptyObject(data)?
+        return (data && data !== ""?
                     <ScrollView style={styles.container}>
                         <IntroDivider intro={strings.imgurls_intro}/>
                         {this._renderImage(data.pictureurl)}

@@ -35,6 +35,7 @@ export default class ShoppingCart extends React.PureComponent {
   }
 
   _renderCartItems(cartInfo){
+    if(!cartInfo || cartInfo.length === 0)return;
     var cartItemList = [];
     cartInfo.map((item,i)=>{
       const image = item.image && item.image!==undefined?{uri:item.image}:require('../assets/img/img_logo.png')

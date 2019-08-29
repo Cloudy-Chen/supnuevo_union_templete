@@ -80,7 +80,7 @@ module.exports = new LocalizedStrings({
     receiverName_input:"请输入接货人姓名",
     cartInfo: "购物车中的商品",
     discountInfo: "折扣信息",
-    orderHistoryInput:"订单日期",
+    orderDate:"订单日期",
     orderInfo:"订单内容",
     pickName:"接货人姓名",
     pickMobilePhone:"接货人电话",
@@ -91,6 +91,7 @@ module.exports = new LocalizedStrings({
     getUnionAdvertisementListFail: "获取折扣广告失败",
     getUnionPriceListFail: "获取价格表失败",
     getUnionPriceListLuceneFail: "搜索失败",
+    getUnionRegulationFail:"获取规则失败",
 
     //shopping
     getCartInfoFail: "获取购物车信息失败",
@@ -100,7 +101,9 @@ module.exports = new LocalizedStrings({
     getPrevOrderFail: "获取当前订单失败",
     getOrderListFail: "获取订单列表失败",
     submitOrderFail: "提交订单失败",
+    submitOrderSuccess: "提交订单成功",
     discountFee: "折扣减免总计",
     totalFeeFianl: "实际付款总计",
+    orderNum: "订单编号",
   },
 });

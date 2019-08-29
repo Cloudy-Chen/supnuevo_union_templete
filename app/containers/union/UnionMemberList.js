@@ -29,9 +29,7 @@ export class UnionMemberList extends Component {
 
   constructor(props) {
     super(props);
-      this.state = {
-          selectedMerchantId:1,
-      };
+      this.state = {};
   }
 
     componentDidMount() {
@@ -92,11 +90,12 @@ export class UnionMemberList extends Component {
   }
 
     _renderItem = (rowData,sectionId,rowId) => {
-        const image = rowData.image && rowData.image!==undefined?{uri:rowData.image}:require('../../assets/img/img_logo.png')
+        const image = rowData.image && rowData.image!==undefined?{uri:rowData.image}:require('../../assets/img/img_logo.png');
+        const merchantId = this.props.auth.get("merchantId");
         return (
             <ListItem
                 leftElement={<Image source={image} style={styles.image} resizeMode={"contain"}/>}
-                rightIcon={rowData.merchantId === this.state.selectedMerchantId?<Icon name='md-checkmark' type='ionicon' color={colors.primaryGray}/>:null}
+                rightIcon={rowData.merchantId === merchantId?<Icon name='md-checkmark' type='ionicon' color={colors.primaryGray}/>:null}
                 title={rowData.nubre}
                 subtitle={rowData.direccion}
                 subtitleStyle={styles.subTitleStyle}
@@ -116,7 +115,6 @@ export class UnionMemberList extends Component {
   _onUnionMember =(member) =>{
       const unionId = this.props.union.get("union").unionId;
       const merchantId = member.merchantId;
-      this.setState({selectedMerchantId:merchantId});
       this.props.dispatch(authActions.setCustomerDefaultMerchant(unionId, merchantId));
       this.props.dispatch(unionActions.setDefaultUnionAndMerchant(null,member));
   };

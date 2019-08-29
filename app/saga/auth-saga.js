@@ -9,7 +9,6 @@ import * as unionActions from "../actions/union-actions";
 import * as authActions from "../actions/auth-actions";
 import * as rootActions from "../actions/root-actions";
 import strings from '../resources/strings';
-import {isEmptyObject} from "../utils/tools";
 
 function* login( action ) {
   const {username,password} = action;
@@ -98,8 +97,8 @@ export default [
   takeEvery(actions.LOGIN_ACTION,login),
   takeEvery(actions.REGISTER_ACTION,register),
   takeEvery(actions.SET_DEFAULT_MERCHANT,setCustomerDefaultMerchant),
-  takeEvery(actions.LOGOUT_ACTION,logOut),
   takeEvery(actions.ADD_RECEIVER_INFO,addCustomerReceiverInfo),
+  takeEvery(actions.LOGOUT_ACTION,logOut),
 ]
 
 

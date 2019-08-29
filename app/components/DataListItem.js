@@ -10,7 +10,7 @@ import {SwipeRow} from "react-native-swipe-list-view";
 // 工具
 import colors from "../resources/colors";
 import strings from "../resources/strings";
-import {isEmptyObject, isObject, SCREEN_WIDTH} from "../utils/tools";
+import {SCREEN_WIDTH} from "../utils/tools";
 
 // actions
 // redux
@@ -43,7 +43,7 @@ class DataListItem extends Component {
                 onPress={this.props.onDetailPress}>
                 <Image resizeMode="contain"
                        style={DataListItemStyles.mainPicture}
-                       source={isEmptyObject(url)?require('../assets/img/img_logo.png'):{uri:url}}/>
+                       source={url == null?require('../assets/img/img_logo.png'):{uri:url}}/>
               <View style={DataListItemStyles.mainTextWrapper}>
                 <Text style={DataListItemStyles.mainTitleText}>{title}</Text>
                 <Text style={DataListItemStyles.mainBriefText} numberOfLines={2}>{brief}</Text>
