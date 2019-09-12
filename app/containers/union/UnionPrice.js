@@ -3,12 +3,7 @@
  */
 
 import React, {Component} from "react";
-import {
-    Image,
-    View,
-    StyleSheet,
-    ListView, KeyboardAvoidingView, Platform, SafeAreaView
-} from "react-native";
+import {Image, View, StyleSheet, ListView, KeyboardAvoidingView, Platform, SafeAreaView} from "react-native";
 import {connect} from "react-redux";
 import {TopToolBar} from "../../components/TopToolBar";
 import {ACTION_BACK, BottomToolBar} from "../../components/BottomToolBar";
